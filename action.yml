@@ -1,0 +1,68 @@
+name: Issue Tracker
+description: Save all comments on an issue to a file in your repository
+
+inputs:
+  filepath:
+    description: Specify the filename to be created or modified
+    required: true
+  committer_name:
+    description: This value will be used for git commit
+    required: false
+    default: GitHub Actions
+  committer_email:
+    description: This value will be used for git commit
+    required: false
+    default: actions@github.com
+  extra_text_when_modified:
+    description: When the file already exists, this string will be added before the content
+    required: false
+    default: "# From issues"
+  with_date:
+    description: Whether to include the date and time
+    required: false
+    default: false
+  timezone:
+    description: Your timezone
+    required: false
+    default: Etc/GMT
+  time_format:
+    description: Time format
+    required: false
+    default: MMM d, yyyy, h:mm a ZZZZ
+    # GitHub comments style:
+    #   format:  "MMM d, yyyy, h:mm a ZZZZ"
+    #   example: "Jun 30, 2023, 6:55 PM GMT+9"
+    #
+    # Twitter style:
+    #   format:  "h:mm a · MMM d, yyyy"
+    #   example: "6:55 PM · Jun 30, 2023"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+      shell: sh
+
+    - name: Track issues
+      run: node $GITHUB_ACTION_PATH/app.js
+      shell: sh
+      env:
+        ISSUE_NUMBER: ${{ github.event.issue.number }}
+        ISSUE_BODY: ${{ github.event.issue.body }}
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+        FILEPATH: ${{ inputs.filepath }}
+        COMMITTER_NAME: ${{ inputs.committer_name }}
+        COMMITTER_EMAIL: ${{ inputs.committer_email }}
+        EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
+        WITH_DATE: ${{ inputs.with_date }}
+        TIMEZONE: ${{ inputs.timezone }}
+        TIME_FORMAT: ${{ inputs.time_format }}
