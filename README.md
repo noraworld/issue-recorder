@@ -3,9 +3,9 @@ Issue Tracker lets you save all comments on an issue to a file in your repositor
 
 It is assumed to work by triggering the issue closed event. For instance, when you close an issue, it starts to work and saves all the comments including their body on the issue you close to a specific file you configure.
 
-| Issue                            | Markdown File                                    |
-| :------------------------------: | :----------------------------------------------: |
-| ![Issue](/screenshots/issue.png) | ![Markdown File](/screenshots/markdown_file.png) |
+| Issue                            | →   | Markdown File                                    |
+| :------------------------------: | --- | :----------------------------------------------: |
+| ![Issue](/screenshots/issue.png) | →   | ![Markdown File](/screenshots/markdown_file.png) |
 
 ## Setup
 ### Workflow sample
