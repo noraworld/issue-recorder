@@ -52,6 +52,7 @@ runs:
       run: node $GITHUB_ACTION_PATH/app.js
       shell: sh
       env:
+        GITHUB_TOKEN: ${{ github.token }}
         ISSUE_NUMBER: ${{ github.event.issue.number }}
         ISSUE_BODY: ${{ github.event.issue.body }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
