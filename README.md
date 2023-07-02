@@ -1,5 +1,5 @@
-# Issue Tracker
-Issue Tracker lets you save all comments on an issue to a file in your repository. Markdown is fully supported.
+# Issue Recorder
+Issue Recorder lets you save all comments on an issue to a file in your repository. Markdown is fully supported.
 
 It is assumed to work by triggering the issue closed event. For instance, when you close an issue, it starts to work and saves all the comments including their body on the issue you close to a specific file you configure.
 
@@ -11,9 +11,9 @@ It is assumed to work by triggering the issue closed event. For instance, when y
 ### Workflow sample
 
 ```yaml
-# .github/workflows/issue-tracker.yml
+# .github/workflows/issue-recorder.yml
 
-name: Issue Tracker
+name: Issue Recorder
 
 on:
   issues:
@@ -24,8 +24,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Track issues
-        uses: noraworld/issue-tracker@v0.1.0
+      - name: Issue Recorder
+        uses: noraworld/issue-recorder@v0.1.0
         with:
           filepath: .issues/${{ github.event.issue.title }}.md
           committer_name: GitHub Actions
