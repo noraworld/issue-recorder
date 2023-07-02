@@ -48,10 +48,6 @@ runs:
       with:
         node-version: '16'
 
-    - name: Install dependencies
-      run: npm install
-      shell: sh
-
     - name: Track issues
       run: node $GITHUB_ACTION_PATH/app.js
       shell: sh
