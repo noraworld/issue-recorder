@@ -1,5 +1,9 @@
 name: Issue Tracker
 description: Save all comments on an issue to a file in your repository
+author: noraworld
+branding:
+  icon: circle
+  color: purple
 
 inputs:
   filepath:
