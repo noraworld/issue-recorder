@@ -47,6 +47,7 @@ jobs:
 | `with_date`                | Whether to include the date and time                                       | Boolean | false    | `false`                    |
 | `timezone`                 | Your timezone                                                              | String  | false    | `Etc/GMT`                  |
 | `time_format`              | Time format                                                                | String  | false    | `MMM d, yyyy, h:mm a ZZZZ` |
+| `with_header`              | Prepend a header content at the beginning of a file                        | String  | false    | `''`                       |
 
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.

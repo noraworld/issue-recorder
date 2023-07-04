@@ -48,6 +48,11 @@ async function run() {
     commitMessage = `Add ${path.basename(filepath)}`
   }
 
+  let header = ''
+  if (!existingContent && process.env.WITH_HEADER) {
+    header = `${process.env.WITH_HEADER}${newline}${newline}`
+  }
+
   let content = ''
   let isFirstComment = true
   comments.forEach((comment) => {
@@ -69,7 +74,7 @@ async function run() {
     fs.mkdirSync(dir, { recursive: true })
   }
 
-  fs.writeFileSync(filepath, `${existingContent}${issueBody}${content}`)
+  fs.writeFileSync(filepath, `${header}${existingContent}${issueBody}${content}`)
 
   execSync(`git config --global user.name "${process.env.COMMITTER_NAME}"`)
   execSync(`git config --global user.email "${process.env.COMMITTER_EMAIL}"`)

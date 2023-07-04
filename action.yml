@@ -40,6 +40,10 @@ inputs:
     # Twitter style:
     #   format:  "h:mm a · MMM d, yyyy"
     #   example: "6:55 PM · Jun 30, 2023"
+  with_header:
+    description: Prepend a header content at the beginning of a file
+    required: false
+    default: ''
 
 runs:
   using: "composite"
@@ -67,3 +71,4 @@ runs:
         WITH_DATE: ${{ inputs.with_date }}
         TIMEZONE: ${{ inputs.timezone }}
         TIME_FORMAT: ${{ inputs.time_format }}
+        WITH_HEADER: ${{ inputs.with_header }}
