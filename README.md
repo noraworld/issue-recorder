@@ -34,6 +34,7 @@ jobs:
           with_date: true
           timezone: Etc/GMT
           time_format: h:mm a · MMM d, yyyy (ZZZZ)
+          with_header: "---\r\npublished: true\r\n---"
 ```
 
 ### Options
