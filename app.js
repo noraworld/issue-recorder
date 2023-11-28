@@ -102,7 +102,9 @@ function buildContent(comments, issueBody, withQuote) {
 }
 
 function commit(issueBody, content) {
-  const filepath = process.env.FILEPATH
+  // Node.js Stream doesn't work if a filename contains back quotes, even if they are sanitized correctly.
+  // Even if it were to work properly, back quotes shouldn't be used for a filename.
+  const filepath = convertSpaceIntoHyphen(eliminateBackQuote(process.env.FILEPATH))
 
   let existingContent = ''
   let commitMessage = ''
@@ -147,7 +149,7 @@ function post(issueBody, content) {
   let header = ''
   if (process.env.WITH_HEADER) header = `${process.env.WITH_HEADER}${newline}${newline}`
 
-  let title = `# ✅ [${process.env.ISSUE_TITLE}](${process.env.ISSUE_URL})${newline}`
+  let title = `# ✅ [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
 
   execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${title}${issueBody}${content}"`)
 }
@@ -160,6 +162,18 @@ function formattedDateTime(timestamp) {
 
 function encompassWithQuote(str) {
   return `>${str.replaceAll(/\r\n/g, '$&>')}`
+}
+
+function sanitizeBackQuote(str) {
+  return str.replaceAll(/`/g, '\\`')
+}
+
+function eliminateBackQuote(str) {
+  return str.replaceAll(/`/g, '')
+}
+
+function convertSpaceIntoHyphen(str) {
+  return str.replaceAll(/\s/g, '-')
 }
 
 run().catch((error) => {
