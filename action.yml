@@ -80,6 +80,7 @@ runs:
         ISSUE_NUMBER: ${{ github.event.issue.number }}
         ISSUE_TITLE: ${{ github.event.issue.title }}
         ISSUE_BODY: ${{ github.event.issue.body }}
+        ISSUE_URL: ${{ github.event.issue.html_url }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
         MODE: ${{ inputs.mode }}
         FILEPATH: ${{ inputs.filepath }}

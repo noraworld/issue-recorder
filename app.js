@@ -130,7 +130,7 @@ function post(issueBody, content) {
   let header = ''
   if (process.env.WITH_HEADER) header = `${process.env.WITH_HEADER}${newline}${newline}`
 
-  let title = `# ✅ ${process.env.ISSUE_TITLE}${newline}`
+  let title = `# ✅ [${process.env.ISSUE_TITLE}](${process.env.ISSUE_URL})${newline}`
 
   execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${title}${issueBody}${content}"`)
 }
