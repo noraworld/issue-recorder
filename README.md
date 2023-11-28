@@ -36,6 +36,8 @@ jobs:
           timezone: Etc/GMT
           time_format: h:mm a · MMM d, yyyy (ZZZZ)
           with_header: "---\r\npublished: true\r\n---"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
 
 ### Options
