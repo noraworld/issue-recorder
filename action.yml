@@ -56,6 +56,10 @@ inputs:
     description: Prepend a header content at the beginning of a file
     required: false
     default: ''
+  with_quote:
+    description: Whether to encompass the whole content with a quote
+    required: false
+    default: false
 
 runs:
   using: "composite"
@@ -88,3 +92,4 @@ runs:
         TIMEZONE: ${{ inputs.timezone }}
         TIME_FORMAT: ${{ inputs.time_format }}
         WITH_HEADER: ${{ inputs.with_header }}
+        WITH_QUOTE: ${{ inputs.with_quote }}

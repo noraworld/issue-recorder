@@ -10,7 +10,10 @@ const { DateTime } = require('luxon')
 const newline = '\r\n'
 
 async function run() {
-  const issueBody = process.env.ISSUE_BODY ? `${process.env.ISSUE_BODY}${newline}` : ''
+  let issueBody = ''
+  if (process.env.ISSUE_BODY) issueBody = `${process.env.ISSUE_BODY}${newline}`
+  if (process.env.WITH_QUOTE) issueBody = encompassWithQuote(issueBody)
+
   let comments = await getComments()
   let content = buildContent(comments, issueBody)
   let modes = process.env.MODE.split(',').map((element) => element.trim())
@@ -65,11 +68,11 @@ function buildContent(comments, issueBody) {
 
   comments.forEach((comment) => {
     if (!isFirstComment || issueBody) {
-      content += `${newline}---${newline}${newline}`
+      content += process.env.WITH_QUOTE ? `${newline}>---${newline}>${newline}` : `${newline}---${newline}${newline}`
     }
     isFirstComment = false
 
-    content += comment.body
+    content += process.env.WITH_QUOTE ? encompassWithQuote(comment.body) : comment.body
 
     if (process.env.WITH_DATE) {
       content += `${newline}${newline}> ${formattedDateTime(comment.created_at)}`
@@ -136,6 +139,10 @@ function formattedDateTime(timestamp) {
   const universalTime = DateTime.fromISO(timestamp, { zone: 'utc' })
   const localTime = universalTime.setZone(process.env.TIMEZONE)
   return localTime.toFormat(process.env.TIME_FORMAT)
+}
+
+function encompassWithQuote(str) {
+  return `>${str.replaceAll(/\r\n/g, '$&>')}`
 }
 
 run().catch((error) => {
