@@ -25,12 +25,14 @@ inputs:
     description: When the file already exists, this string will be added before the content
     required: false
     default: "# From issues"
-  issue_repo:
+  target_issue_repo:
     description: Select a repository with a username whose issue you want to transfer
     required: false
-  issue_number:
+    default: ""
+  target_issue_number:
     description: Select an issue number
     required: false
+    default: ""
   with_date:
     description: Whether to include the date and time
     required: false
@@ -72,6 +74,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         ISSUE_NUMBER: ${{ github.event.issue.number }}
+        ISSUE_TITLE: ${{ github.event.issue.title }}
         ISSUE_BODY: ${{ github.event.issue.body }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
         MODE: ${{ inputs.mode }}
@@ -79,8 +82,8 @@ runs:
         COMMITTER_NAME: ${{ inputs.committer_name }}
         COMMITTER_EMAIL: ${{ inputs.committer_email }}
         EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
-        ISSUE_REPO: ${{ inputs.issue_repo }}
-        ISSUE_NUMBER: ${{ inputs.issue_number }}
+        TARGET_ISSUE_REPO: ${{ inputs.target_issue_repo }}
+        TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
         WITH_DATE: ${{ inputs.with_date }}
         TIMEZONE: ${{ inputs.timezone }}
         TIME_FORMAT: ${{ inputs.time_format }}

@@ -14,7 +14,18 @@ async function run() {
   let comments = getComments()
   let content = buildContent(comments, issueBody)
 
-  commit(issueBody, content)
+  switch (process.env.MODE) {
+    case 'file':
+      commit(issueBody, content)
+      break
+    case 'issue':
+      post(issueBody, content)
+      break
+    default:
+      console.error(`unknown mode: ${process.env.MODE}`)
+      process.exit(1)
+      break
+  }
 }
 
 function getComments() {
@@ -97,6 +108,24 @@ function commit(issueBody, content) {
   execSync(`git add "${filepath}"`)
   execSync(`git commit -m "${commitMessage}"`)
   execSync('git push')
+}
+
+function post(issueBody, content) {
+  targetIssueRepo = process.env.TARGET_ISSUE_REPO ? process.env.ISSUE_REPO : process.env.GITHUB_REPOSITORY
+
+  if (process.env.TARGET_ISSUE_NUMBER && process.env.TARGET_ISSUE_NUMBER !== 'latest') {
+    targetIssueNumber = process.env.TARGET_ISSUE_NUMBER
+  }
+  else {
+    targetIssueNumber = execSync(`gh issue list --repo "${targetIssueRepo}" --limit 1 | awk '{ print $1 }'`)
+  }
+
+  let header = ''
+  if (process.env.WITH_HEADER) header = `${process.env.WITH_HEADER}${newline}${newline}`
+
+  let title = `# ✅ ${process.env.ISSUE_TITLE}${newline}`
+
+  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${title}${issueBody}${content}"`)
 }
 
 function formattedDateTime(timestamp) {

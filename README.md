@@ -39,7 +39,7 @@ jobs:
 ```
 
 ### Options
-It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to file and specify issue_repo, it doesn't work as you expect.
+It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to file and specify `target_issue_repo`, it doesn't work as you expect.
 
 | Key                        | Mode            | Description                                                                                                                                                        | Type    | Required | Default                                   |
 | -------------------------- | --------------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | ----------------------------------------- |
@@ -48,8 +48,8 @@ It doesn't take any effect if you specify an option that is not relevant to the 
 | `committer_name`           | `file`          | This value will be used for git commit                                                                                                                             | String  | false    | `GitHub Actions`                          |
 | `committer_email`          | `file`          | This value will be used for git commit                                                                                                                             | String  | false    | `actions@github.com`                      |
 | `extra_text_when_modified` | `file`          | When the file already exists, this string will be added before the content                                                                                         | String  | false    | `"# From issues"`                         |
-| `issue_repo`               | `issue`         | Select a repository with a username whose issue you want to transfer (e.g. `noraworld/issue-recorder`)                                                             | String  | false    | (the repository this Action is installed) |
-| `issue_number`             | `issue`         | Select an issue number (If you specify a special identifier `latest`, the latest issue on the specified repository will be obtained)                               | String  | false    | `latest`                                  |
+| `target_issue_repo`        | `issue`         | Select a repository with a username whose issue you want to transfer (e.g. `noraworld/issue-recorder`)                                                             | String  | false    | (the repository this Action is installed) |
+| `target_issue_number`      | `issue`         | Select an issue number (If you specify a special identifier `latest`, the latest issue on the specified repository will be obtained)                               | String  | false    | `latest`                                  |
 | `with_date`                | `file`, `issue` | Whether to include the date and time                                                                                                                               | Boolean | false    | `false`                                   |
 | `timezone`                 | `file`, `issue` | Your timezone                                                                                                                                                      | String  | false    | `Etc/GMT`                                 |
 | `time_format`              | `file`, `issue` | Time format                                                                                                                                                        | String  | false    | `MMM d, yyyy, h:mm a ZZZZ`                |
