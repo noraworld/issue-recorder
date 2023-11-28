@@ -36,7 +36,7 @@ inputs:
   with_date:
     description: Whether to include the date and time
     required: false
-    default: false
+    default: ""
   timezone:
     description: Your timezone
     required: false
@@ -59,7 +59,7 @@ inputs:
   with_quote:
     description: Whether to encompass the whole content with a quote
     required: false
-    default: false
+    default: ""
 
 runs:
   using: "composite"
