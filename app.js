@@ -11,16 +11,24 @@ const newline = '\r\n'
 
 async function run() {
   let comments = await getComments()
-  let issueBody = buildIssueBody()
-  let content = buildContent(comments, issueBody)
   let modes = process.env.MODE.split(',').map((element) => element.trim())
+
+  let withQuote
+  let issueBody
+  let content
 
   for (const mode of modes) {
     switch (mode) {
       case 'file':
+        withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false
+        issueBody = buildIssueBody(withQuote)
+        content = buildContent(comments, issueBody, withQuote)
         commit(issueBody, content)
         break
       case 'issue':
+        withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false
+        issueBody = buildIssueBody(withQuote)
+        content = buildContent(comments, issueBody, withQuote)
         post(issueBody, content)
         break
       default:
@@ -59,25 +67,26 @@ async function getComments() {
   return comments
 }
 
-function buildIssueBody() {
+function buildIssueBody(withQuote) {
   let issueBody = ''
-  if (process.env.ISSUE_BODY) issueBody = `${process.env.ISSUE_BODY}`
-  if (process.env.WITH_QUOTE) issueBody = encompassWithQuote(issueBody)
+  if (process.env.ISSUE_BODY) issueBody =  `${process.env.ISSUE_BODY}`
+  if (withQuote)              issueBody =  encompassWithQuote(issueBody)
   if (process.env.ISSUE_BODY) issueBody += newline
-  if (process.env.WITH_DATE) issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
+  if (process.env.WITH_DATE)  issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
+  return issueBody
 }
 
-function buildContent(comments, issueBody) {
+function buildContent(comments, issueBody, withQuote) {
   let content = ''
   let isFirstComment = true
 
   comments.forEach((comment) => {
     if (!isFirstComment || issueBody) {
-      content += process.env.WITH_QUOTE ? `${newline}>---${newline}>${newline}` : `${newline}---${newline}${newline}`
+      content += withQuote ? `${newline}>---${newline}>${newline}` : `${newline}---${newline}${newline}`
     }
     isFirstComment = false
 
-    content += process.env.WITH_QUOTE ? encompassWithQuote(comment.body) : comment.body
+    content += withQuote ? encompassWithQuote(comment.body) : comment.body
 
     if (process.env.WITH_DATE) {
       content += `${newline}${newline}> ${formattedDateTime(comment.created_at)}`
