@@ -81,6 +81,7 @@ runs:
         ISSUE_TITLE: ${{ github.event.issue.title }}
         ISSUE_BODY: ${{ github.event.issue.body }}
         ISSUE_URL: ${{ github.event.issue.html_url }}
+        ISSUE_CREATED_AT: ${{ github.event.issue.created_at }}
         GITHUB_ACTION_PATH: ${{ github.action_path }}
         MODE: ${{ inputs.mode }}
         FILEPATH: ${{ inputs.filepath }}
