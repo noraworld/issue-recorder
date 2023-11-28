@@ -11,7 +11,7 @@ const newline = '\r\n'
 
 async function run() {
   const issueBody = process.env.ISSUE_BODY ? `${process.env.ISSUE_BODY}${newline}` : ''
-  let comments = getComments()
+  let comments = await getComments()
   let content = buildContent(comments, issueBody)
   let modes = process.env.MODE.split(',').map((element) => element.trim())
 
@@ -31,7 +31,7 @@ async function run() {
   }
 }
 
-function getComments() {
+async function getComments() {
   const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN })
 
   const repository = process.env.GITHUB_REPOSITORY
@@ -44,7 +44,7 @@ function getComments() {
   let response = null
 
   do {
-    response = octokit.issues.listComments({
+    response = await octokit.issues.listComments({
       owner,
       repo,
       issue_number: issueNumber,
