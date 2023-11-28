@@ -10,6 +10,14 @@ const { DateTime } = require('luxon')
 const newline = '\r\n'
 
 async function run() {
+  const issueBody = process.env.ISSUE_BODY ? `${process.env.ISSUE_BODY}${newline}` : ''
+  let comments = getComments()
+  let content = buildContent(comments, issueBody)
+
+  commit(issueBody, content)
+}
+
+function getComments() {
   const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN })
 
   const repository = process.env.GITHUB_REPOSITORY
@@ -22,7 +30,7 @@ async function run() {
   let response = null
 
   do {
-    response = await octokit.issues.listComments({
+    response = octokit.issues.listComments({
       owner,
       repo,
       issue_number: issueNumber,
@@ -34,9 +42,33 @@ async function run() {
     page++
   } while (response.data.length === perPage)
 
+  return comments
+}
+
+function buildContent(comments, issueBody) {
+  let content = ''
+  let isFirstComment = true
+
+  comments.forEach((comment) => {
+    if (!isFirstComment || issueBody) {
+      content += `${newline}---${newline}${newline}`
+    }
+    isFirstComment = false
+
+    content += comment.body
+
+    if (process.env.WITH_DATE) {
+      content += `${newline}${newline}> ${formattedDateTime(comment.created_at)}`
+    }
+
+    content += `${newline}`
+  })
+
+  return content
+}
+
+function commit(issueBody, content) {
   const filepath = process.env.FILEPATH
-  const dir = path.dirname(filepath)
-  const issueBody = process.env.ISSUE_BODY ? `${process.env.ISSUE_BODY}${newline}` : ''
 
   let existingContent = ''
   let commitMessage = ''
@@ -53,23 +85,7 @@ async function run() {
     header = `${process.env.WITH_HEADER}${newline}${newline}`
   }
 
-  let content = ''
-  let isFirstComment = true
-  comments.forEach((comment) => {
-    if (!isFirstComment || issueBody) {
-      content += `${newline}---${newline}${newline}`
-    }
-    isFirstComment = false
-
-    content += comment.body
-
-    if (process.env.WITH_DATE) {
-      content += `${newline}${newline}> ${formattedDateTime(comment.created_at)}`
-    }
-
-    content += `${newline}`
-  })
-
+  const dir = path.dirname(filepath)
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true })
   }
