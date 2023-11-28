@@ -56,6 +56,7 @@ It doesn't take any effect if you specify an option that is not relevant to the 
 | `timezone`                 | `file`, `issue` | Your timezone                                                                                          | String  | false    | `Etc/GMT`                                 |
 | `time_format`              | `file`, `issue` | Time format                                                                                            | String  | false    | `MMM d, yyyy, h:mm a ZZZZ`                |
 | `with_header`              | `file`, `issue` | Prepend a header content at the beginning of a file                                                    | String  | false    | `''`                                      |
+| `with_quote`               | `file`, `issue` | Whether to encompass the whole content with a quote                                                    | Boolean | false    | `false`                                   |
 
 [^mode]: If you want to save to both of them, you can use a comma-separated value like `issue, file`.
 
