@@ -10,13 +10,8 @@ const { DateTime } = require('luxon')
 const newline = '\r\n'
 
 async function run() {
-  let issueBody = ''
-  if (process.env.ISSUE_BODY) issueBody = `${process.env.ISSUE_BODY}`
-  if (process.env.WITH_QUOTE) issueBody = encompassWithQuote(issueBody)
-  if (process.env.ISSUE_BODY) issueBody += newline
-  if (process.env.WITH_DATE) issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
-
   let comments = await getComments()
+  let issueBody = buildIssueBody()
   let content = buildContent(comments, issueBody)
   let modes = process.env.MODE.split(',').map((element) => element.trim())
 
@@ -62,6 +57,14 @@ async function getComments() {
   } while (response.data.length === perPage)
 
   return comments
+}
+
+function buildIssueBody() {
+  let issueBody = ''
+  if (process.env.ISSUE_BODY) issueBody = `${process.env.ISSUE_BODY}`
+  if (process.env.WITH_QUOTE) issueBody = encompassWithQuote(issueBody)
+  if (process.env.ISSUE_BODY) issueBody += newline
+  if (process.env.WITH_DATE) issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
 }
 
 function buildContent(comments, issueBody) {
