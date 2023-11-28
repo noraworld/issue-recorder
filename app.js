@@ -69,10 +69,14 @@ async function getComments() {
 
 function buildIssueBody(withQuote) {
   let issueBody = ''
+
   if (process.env.ISSUE_BODY) issueBody =  `${process.env.ISSUE_BODY}`
   if (withQuote)              issueBody =  encompassWithQuote(issueBody)
   if (process.env.ISSUE_BODY) issueBody += newline
-  if (process.env.WITH_DATE)  issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
+  if (process.env.ISSUE_BODY && process.env.WITH_DATE) {
+    issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
+  }
+
   return issueBody
 }
 
