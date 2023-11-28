@@ -13,18 +13,21 @@ async function run() {
   const issueBody = process.env.ISSUE_BODY ? `${process.env.ISSUE_BODY}${newline}` : ''
   let comments = getComments()
   let content = buildContent(comments, issueBody)
+  let modes = process.env.MODE.split(',').map((element) => element.trim())
 
-  switch (process.env.MODE) {
-    case 'file':
-      commit(issueBody, content)
-      break
-    case 'issue':
-      post(issueBody, content)
-      break
-    default:
-      console.error(`unknown mode: ${process.env.MODE}`)
-      process.exit(1)
-      break
+  for (const mode of modes) {
+    switch (mode) {
+      case 'file':
+        commit(issueBody, content)
+        break
+      case 'issue':
+        post(issueBody, content)
+        break
+      default:
+        console.error(`unknown mode: ${process.env.MODE}`)
+        process.exit(1)
+        break
+    }
   }
 }
 
