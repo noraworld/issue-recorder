@@ -1,7 +1,7 @@
 # Issue Recorder
-Issue Recorder lets you save all comments on an issue to a file in your repository. Markdown is fully supported.
+Issue Recorder lets you save all comments on an issue to a file in your repository or within another issue. Markdown is fully supported.
 
-It is assumed to work by triggering the issue closed event. For instance, when you close an issue, it starts to work and saves all the comments including their body on the issue you close to a specific file you configure.
+It is assumed to work by triggering the issue closed event. For instance, when you close an issue, it starts to work and saves all the comments, including their body, on the issue you close to a specific file or another issue you configure.
 
 | Issue                            | →   | Markdown File                                    |
 | :------------------------------: | --- | :----------------------------------------------: |
