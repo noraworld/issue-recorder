@@ -43,6 +43,8 @@ jobs:
 ### Options
 Here are the options you can customize.
 
+Please note that you have to specify the `filepath` at the moment. This will be optional in the future. Stay tuned.
+
 | Key                        | Mode            | Description                                                                                            | Type    | Required | Default                                   |
 | -------------------------- | --------------- |------------------------------------------------------------------------------------------------------- | ------- | -------- | ----------------------------------------- |
 | `mode`                     |                 | Specify where to save the issue, a `file`, or within another `issue` [^mode]                           | String  | false    | `file`                                    |
@@ -58,7 +60,7 @@ Here are the options you can customize.
 | `with_header`              | `file`, `issue` | Prepend a header content at the beginning of a file                                                    | String  | false    | `''`                                      |
 | `with_quote`               | `file`, `issue` | Specify the mode name and whether to encompass the whole content with a quote for those modes          | String  | false    | `''`                                      |
 
-It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to file and specify `target_issue_repo`, it doesn't work as you expect.
+It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to `file` and specify `target_issue_repo`, it doesn't work as you expect.
 
 [^mode]: If you want to save to both of them, you can use a comma-separated value like `issue, file`.
 
