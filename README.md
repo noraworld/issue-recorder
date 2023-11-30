@@ -41,7 +41,7 @@ jobs:
 ```
 
 ### Options
-It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to file and specify `target_issue_repo`, it doesn't work as you expect.
+Here are the options you can customize.
 
 | Key                        | Mode            | Description                                                                                            | Type    | Required | Default                                   |
 | -------------------------- | --------------- |------------------------------------------------------------------------------------------------------- | ------- | -------- | ----------------------------------------- |
@@ -57,6 +57,8 @@ It doesn't take any effect if you specify an option that is not relevant to the 
 | `time_format`              | `file`, `issue` | Time format                                                                                            | String  | false    | `MMM d, yyyy, h:mm a ZZZZ`                |
 | `with_header`              | `file`, `issue` | Prepend a header content at the beginning of a file                                                    | String  | false    | `''`                                      |
 | `with_quote`               | `file`, `issue` | Specify the mode name and whether to encompass the whole content with a quote for those modes          | String  | false    | `''`                                      |
+
+It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to file and specify `target_issue_repo`, it doesn't work as you expect.
 
 [^mode]: If you want to save to both of them, you can use a comma-separated value like `issue, file`.
 
