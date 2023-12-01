@@ -123,7 +123,7 @@ function commit(issueBody, content) {
 
   let title = ''
   if (process.env.WITH_TITLE) {
-    title = `# [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
+    title = `# [${process.env.ISSUE_TITLE}](${process.env.ISSUE_URL})${newline}`
   }
 
   const dir = path.dirname(filepath)
@@ -153,6 +153,7 @@ function post(issueBody, content) {
 
   let title = ''
   if (process.env.WITH_TITLE) {
+    // TODO: Is sanitizeBackQuote() necessary?
     title = `# ✅ [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
   }
 
