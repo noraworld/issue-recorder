@@ -199,10 +199,6 @@ function encompassWithQuote(str) {
   return `> ${str.replaceAll(/\r\n/g, '$&> ')}`
 }
 
-function sanitizeBackQuote(str) {
-  return str.replaceAll(/`/g, '\\`')
-}
-
 function eliminateBackQuote(str) {
   return str.replaceAll(/`/g, '')
 }
