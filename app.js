@@ -161,7 +161,7 @@ function post(issueBody, content) {
     }
   }
 
-  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${header}${issueBody}${content}"`)
+  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${issueBody}${content}"`)
 }
 
 function buildFilepath() {
