@@ -196,7 +196,7 @@ function formattedDateTime(timestamp) {
 }
 
 function encompassWithQuote(str) {
-  return `>${str.replaceAll(/\r\n/g, '$&>')}`
+  return `> ${str.replaceAll(/\r\n/g, '$&> ')}`
 }
 
 function sanitizeBackQuote(str) {
