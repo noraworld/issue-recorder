@@ -165,11 +165,11 @@ function buildFilepath() {
 
       let dirA = issueNumber / 10000
       if (Number.isInteger(dirA)) dirA--
-      dirA = Math.floor(dirA)
+      dirA = String(Math.floor(dirA)).padStart(2, '0')
 
       let dirB = issueNumber / 100
       if (Number.isInteger(dirB)) dirB--
-      dirB = Math.floor(dirB) % 100
+      dirB = String(Math.floor(dirB) % 100).padStart(2, '0')
 
       filepath = `issues/${dirA}/${dirB}/${issueNumber}_${convertSpaceIntoHyphen(eliminateBackQuote(issueTitle))}.md`
       break
