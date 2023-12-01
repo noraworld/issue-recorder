@@ -57,6 +57,10 @@ inputs:
     description: Prepend a header content at the beginning of a file
     required: false
     default: ""
+  with_title:
+    description: Add an issue title
+    required: false
+    default: ""
   with_quote:
     description: Whether to encompass the whole content with a quote
     required: false
@@ -95,4 +99,5 @@ runs:
         TIMEZONE: ${{ inputs.timezone }}
         TIME_FORMAT: ${{ inputs.time_format }}
         WITH_HEADER: ${{ inputs.with_header }}
+        WITH_TITLE: ${{ inputs.with_title }}
         WITH_QUOTE: ${{ inputs.with_quote }}

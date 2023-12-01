@@ -118,12 +118,12 @@ function commit(issueBody, content) {
 
   let header = ''
   if (!existingContent && process.env.WITH_HEADER) {
-    if (process.env.WITH_HEADER === 'title') {
-      header = `# [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
-    }
-    else {
-      header = `${process.env.WITH_HEADER}${newline}${newline}`
-    }
+    header = `${process.env.WITH_HEADER}${newline}${newline}`
+  }
+
+  let title = ''
+  if (process.env.WITH_TITLE) {
+    title = `# [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
   }
 
   const dir = path.dirname(filepath)
@@ -131,7 +131,7 @@ function commit(issueBody, content) {
     fs.mkdirSync(dir, { recursive: true })
   }
 
-  fs.writeFileSync(filepath, `${header}${existingContent}${issueBody}${content}`)
+  fs.writeFileSync(filepath, `${header}${title}${existingContent}${issueBody}${content}`)
 
   execSync(`git config --global user.name "${process.env.COMMITTER_NAME}"`)
   execSync(`git config --global user.email "${process.env.COMMITTER_EMAIL}"`)
@@ -151,17 +151,12 @@ function post(issueBody, content) {
     targetIssueNumber = execSync(`gh issue list --repo "${targetIssueRepo}" --limit 1 | awk '{ print $1 }'`).toString().trim()
   }
 
-  let header = ''
-  if (process.env.WITH_HEADER) {
-    if (process.env.WITH_HEADER === 'title') {
-      header = `# ✅ [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
-    }
-    else {
-      header = `${process.env.WITH_HEADER}${newline}${newline}`
-    }
+  let title = ''
+  if (process.env.WITH_TITLE) {
+    title = `# ✅ [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
   }
 
-  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${issueBody}${content}"`)
+  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${title}${issueBody}${content}"`)
 }
 
 function buildFilepath() {
