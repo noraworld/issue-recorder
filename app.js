@@ -131,7 +131,7 @@ function commit(issueBody, content) {
     fs.mkdirSync(dir, { recursive: true })
   }
 
-  fs.writeFileSync(filepath, `${header}${title}${existingContent}${issueBody}${content}`)
+  fs.writeFileSync(filepath, `${header}${existingContent}${title}${issueBody}${content}`)
 
   execSync(`git config --global user.name "${process.env.COMMITTER_NAME}"`)
   execSync(`git config --global user.email "${process.env.COMMITTER_EMAIL}"`)
