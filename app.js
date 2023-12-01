@@ -104,7 +104,7 @@ function buildContent(comments, issueBody, withQuote) {
 function commit(issueBody, content) {
   // Node.js Stream doesn't work if a filename contains back quotes, even if they are sanitized correctly.
   // Even if it were to work properly, back quotes shouldn't be used for a filename.
-  const filepath = convertSpaceIntoHyphen(eliminateBackQuote(process.env.FILEPATH))
+  const filepath = buildFilepath()
 
   let existingContent = ''
   let commitMessage = ''
@@ -152,6 +152,33 @@ function post(issueBody, content) {
   let title = `# ✅ [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
 
   execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${title}${issueBody}${content}"`)
+}
+
+function buildFilepath() {
+  let filepath = ''
+
+  switch (process.env.FILEPATH) {
+    case 'default':
+      // https://github.com/noraworld/to-do/issues/173#issuecomment-1835656402
+      const issueNumber = process.env.ISSUE_NUMBER
+      const issueTitle  = process.env.ISSUE_TITLE
+
+      let dirA = issueNumber / 10000
+      if (Number.isInteger(dirA)) dirA--
+      dirA = Math.floor(dirA)
+
+      let dirB = issueNumber / 100
+      if (Number.isInteger(dirB)) dirB--
+      dirB = Math.floor(dirB) % 100
+
+      filepath = `issues/${dirA}/${dirB}/${issueNumber}_${convertSpaceIntoHyphen(eliminateBackQuote(issueTitle))}.md`
+      break
+    default:
+      filepath = convertSpaceIntoHyphen(eliminateBackQuote(process.env.FILEPATH))
+      break
+  }
+
+  return filepath
 }
 
 function formattedDateTime(timestamp) {

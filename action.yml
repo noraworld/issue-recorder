@@ -12,7 +12,8 @@ inputs:
     default: file
   filepath:
     description: Specify the filename to be created or modified
-    required: true
+    required: false
+    default: default
   committer_name:
     description: This value will be used for git commit
     required: false
