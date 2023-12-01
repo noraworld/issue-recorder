@@ -118,7 +118,12 @@ function commit(issueBody, content) {
 
   let header = ''
   if (!existingContent && process.env.WITH_HEADER) {
-    header = `${process.env.WITH_HEADER}${newline}${newline}`
+    if (process.env.WITH_HEADER === 'title') {
+      header = `# [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
+    }
+    else {
+      header = `${process.env.WITH_HEADER}${newline}${newline}`
+    }
   }
 
   const dir = path.dirname(filepath)
@@ -147,11 +152,16 @@ function post(issueBody, content) {
   }
 
   let header = ''
-  if (process.env.WITH_HEADER) header = `${process.env.WITH_HEADER}${newline}${newline}`
+  if (process.env.WITH_HEADER) {
+    if (process.env.WITH_HEADER === 'title') {
+      header = `# ✅ [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
+    }
+    else {
+      header = `${process.env.WITH_HEADER}${newline}${newline}`
+    }
+  }
 
-  let title = `# ✅ [${sanitizeBackQuote(process.env.ISSUE_TITLE)}](${process.env.ISSUE_URL})${newline}`
-
-  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${title}${issueBody}${content}"`)
+  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body "${header}${header}${issueBody}${content}"`)
 }
 
 function buildFilepath() {
