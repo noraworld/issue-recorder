@@ -86,7 +86,7 @@ You can use the following special identifiers for `notification_comment`.
 | `<FILE_PATH>` | A file path configured in `filepath` |
 | `<FILE_URL>`  | A full URL for a file                |
 
-For instance, if you specify `The content of this task was saved in [<FILE_PATH>](<FILE_URL>)`, the actual comment is like "The content of this task was saved in `[issues/00/42/4201_purchase-boiled-eggs.md](https://github.com/noraworld/issue-recorder/blob/main/issues/00/42/4201_purchase-boiled-eggs.md)`.
+For instance, if you specify `The content of this task was saved in [<FILE_PATH>](<FILE_URL>)`, the actual comment is like `The content of this task was saved in [issues/00/42/4201_purchase-boiled-eggs.md](https://github.com/noraworld/issue-recorder/blob/main/issues/00/42/4201_purchase-boiled-eggs.md)`.
 
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.
