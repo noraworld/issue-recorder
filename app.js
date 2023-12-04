@@ -186,7 +186,7 @@ function post(issueBody, content) {
     process.env.FOLD_THRESHOLD !== 'infinity' &&
     issueBody.length + content.length > process.env.FOLD_THRESHOLD
   ) {
-    fold = `<details><summary>${process.env.FOLD_SUMMARY}</summary>${newline}${newline}`
+    fold = `<details><summary>${process.env.FOLD_SUMMARY}</summary><br>${newline}${newline}`
     foldEnd = `</details>${newline}`
   }
 
