@@ -156,8 +156,20 @@ function post(issueBody, content) {
     title = `# ✅ [${process.env.ISSUE_TITLE}](${process.env.ISSUE_URL})${newline}`
   }
 
+  let fold = ''
+  let foldEnd = ''
+  if
+  (
+    process.env.FOLD_THRESHOLD !== '' &&
+    process.env.FOLD_THRESHOLD !== 'infinity' &&
+    issueBody.length + content.length > process.env.FOLD_THRESHOLD
+  ) {
+    fold = `<details><summary>${process.env.FOLD_SUMMARY}</summary>${newline}${newline}`
+    foldEnd = `</details>${newline}`
+  }
+
   let tmpFile = 'tmp.md'
-  fs.writeFileSync(tmpFile, `${title}${issueBody}${content}`)
+  fs.writeFileSync(tmpFile, `${title}${fold}${issueBody}${content}${foldEnd}`)
 
   execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body-file "${tmpFile}"`)
 }

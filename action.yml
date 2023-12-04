@@ -34,6 +34,14 @@ inputs:
     description: Select an issue number
     required: false
     default: ""
+  fold_threshold:
+    description: Specify the threshold to fold
+    required: false
+    default: infinity
+  fold_summary:
+    description: Specify a summary string when an issue is folded
+    required: false
+    default: ""
   with_date:
     description: Whether to include the date and time
     required: false
@@ -95,6 +103,8 @@ runs:
         EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
         TARGET_ISSUE_REPO: ${{ inputs.target_issue_repo }}
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
+        FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
+        FOLD_SUMMARY: ${{ inputs.fold_summary }}
         WITH_DATE: ${{ inputs.with_date }}
         TIMEZONE: ${{ inputs.timezone }}
         TIME_FORMAT: ${{ inputs.time_format }}
