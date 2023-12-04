@@ -54,13 +54,6 @@ inputs:
     description: Time format
     required: false
     default: MMM d, yyyy, h:mm a ZZZZ
-    # GitHub comments style:
-    #   format:  "MMM d, yyyy, h:mm a ZZZZ"
-    #   example: "Jun 30, 2023, 6:55 PM GMT+9"
-    #
-    # Twitter style:
-    #   format:  "h:mm a · MMM d, yyyy"
-    #   example: "6:55 PM · Jun 30, 2023"
   with_header:
     description: Prepend a header content at the beginning of a file
     required: false

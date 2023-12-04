@@ -69,5 +69,13 @@ It doesn't take any effect if you specify an option that is not relevant to the 
 
 [^fold_threshold]: If you specify the empty string `""`, the special identifier `infinity`, or don't specify anything, this option will be disabled.
 
+#### Time format sample
+Here are some examples of the time formats. You can customize the time format other than the examples below.
+
+| Style             | Format                     | Example                                              |
+| ----------------- | -------------------------- | ---------------------------------------------------- |
+| GitHub comments   | `MMM d, yyyy, h:mm a ZZZZ` | <blockquote>Jun 30, 2023, 6:55 PM GMT+9</blockquote> |
+| X (Twitter) posts | `h:mm a · MMM d, yyyy`     | <blockquote>6:55 PM · Jun 30, 2023</blockquote>      |
+
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.
