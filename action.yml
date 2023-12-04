@@ -26,6 +26,10 @@ inputs:
     description: When the file already exists, this string will be added before the content
     required: false
     default: "# From issues"
+  notification_comment:
+    description: Specify the comment content to leave after saving to a file
+    required: false
+    default: ""
   target_issue_repo:
     description: Select a repository with a username whose issue you want to transfer
     required: false
@@ -94,6 +98,7 @@ runs:
         COMMITTER_NAME: ${{ inputs.committer_name }}
         COMMITTER_EMAIL: ${{ inputs.committer_email }}
         EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
+        NOTIFICATION_COMMENT: ${{ inputs.notification_comment }}
         TARGET_ISSUE_REPO: ${{ inputs.target_issue_repo }}
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}

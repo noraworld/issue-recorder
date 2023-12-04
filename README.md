@@ -50,6 +50,7 @@ Here are the options you can customize. All options are not necessarily required
 | `committer_name`           | `file`          | This value will be used for git commit                                                                                                                                                                                               | `GitHub Actions`                                              | String  | False    |
 | `committer_email`          | `file`          | This value will be used for git commit                                                                                                                                                                                               | `actions@github.com`                                          | String  | False    |
 | `extra_text_when_modified` | `file`          | When the file already exists, this string will be added before the content                                                                                                                                                           | `"# From issues"`                                             | String  | False    |
+| `notification_comment`     | `file`          | Leave the specified comment here after a file is created or modified ([details](#))                                                                                                                                                  | `""`                                                          | String  | False    |
 | `target_issue_repo`        | `issue`         | Select a repository with a username whose issue you want to transfer (e.g. `noraworld/issue-recorder`)                                                                                                                               | `<REPO_NAME>` (the repository where this Action is installed) | String  | False    |
 | `target_issue_number`      | `issue`         | Select an issue number [^target_issue_number]                                                                                                                                                                                        | `latest`                                                      | String  | False    |
 | `fold_threshold`           | `issue`         | When the total number of letters in the body and the comments is greater than the specified number here, they are folded [^fold_threshold]                                                                                           | `infinity`                                                    | Integer | False    |
@@ -76,6 +77,16 @@ Here are some examples of the time formats. You can customize the time format ot
 | ----------------- | -------------------------- | ---------------------------------------------------- |
 | GitHub comments   | `MMM d, yyyy, h:mm a ZZZZ` | <blockquote>Jun 30, 2023, 6:55 PM GMT+9</blockquote> |
 | X (Twitter) posts | `h:mm a · MMM d, yyyy`     | <blockquote>6:55 PM · Jun 30, 2023</blockquote>      |
+
+#### Special identifier for `notification_comment`
+You can use the following special identifiers for `notification_comment`.
+
+| Identifier    | Replaced with                        |
+| ------------- | ------------------------------------ |
+| `<FILE_PATH>` | A file path configured in `filepath` |
+| `<FILE_URL>`  | A full URL for a file                |
+
+For instance, if you specify `The content of this task was saved in [<FILE_PATH>](<FILE_URL>)`, the actual comment is like "The content of this task was saved in `[issues/00/42/4201_purchase-boiled-eggs.md](https://github.com/noraworld/issue-recorder/blob/main/issues/00/42/4201_purchase-boiled-eggs.md)`.
 
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.
