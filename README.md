@@ -43,22 +43,20 @@ jobs:
 ### Options
 Here are the options you can customize.
 
-Please note that you have to specify the `filepath` at the moment. This will be optional in the future. Stay tuned.
-
-| Key                        | Mode            | Description                                                                                            | Type    | Required | Default                                   |
-| -------------------------- | --------------- |------------------------------------------------------------------------------------------------------- | ------- | -------- | ----------------------------------------- |
-| `mode`                     |                 | Specify where to save the issue, a `file`, or within another `issue` [^mode]                           | String  | false    | `file`                                    |
-| `filepath`                 | `file`          | Specify the filename to be created or modified                                                         | String  | true     |                                           |
-| `committer_name`           | `file`          | This value will be used for git commit                                                                 | String  | false    | `GitHub Actions`                          |
-| `committer_email`          | `file`          | This value will be used for git commit                                                                 | String  | false    | `actions@github.com`                      |
-| `extra_text_when_modified` | `file`          | When the file already exists, this string will be added before the content                             | String  | false    | `"# From issues"`                         |
-| `target_issue_repo`        | `issue`         | Select a repository with a username whose issue you want to transfer (e.g. `noraworld/issue-recorder`) | String  | false    | (the repository this Action is installed) |
-| `target_issue_number`      | `issue`         | Select an issue number [^target_issue_number]                                                          | String  | false    | `latest`                                  |
-| `with_date`                | `file`, `issue` | Whether to include the date and time                                                                   | Boolean | false    | `false`                                   |
-| `timezone`                 | `file`, `issue` | Your timezone                                                                                          | String  | false    | `Etc/GMT`                                 |
-| `time_format`              | `file`, `issue` | Time format                                                                                            | String  | false    | `MMM d, yyyy, h:mm a ZZZZ`                |
-| `with_header`              | `file`, `issue` | Prepend a header content at the beginning of a file                                                    | String  | false    | `''`                                      |
-| `with_quote`               | `file`, `issue` | Specify the mode name and whether to encompass the whole content with a quote for those modes          | String  | false    | `''`                                      |
+| Key                        | Mode            | Description                                                                                            | Type    | Required | Default                                                       |
+| -------------------------- | --------------- |------------------------------------------------------------------------------------------------------- | ------- | -------- | ------------------------------------------------------------- |
+| `mode`                     |                 | Specify where to save the issue, a `file`, or within another `issue` [^mode]                           | String  | false    | `file`                                                        |
+| `filepath`                 | `file`          | Specify the filename to be created or modified                                                         | String  | false    | `issues/<00-INF>/<00-99>/<ISSUE_NUMBER>_<ISSUE_TITLE>.md`     |
+| `committer_name`           | `file`          | This value will be used for git commit                                                                 | String  | false    | `GitHub Actions`                                              |
+| `committer_email`          | `file`          | This value will be used for git commit                                                                 | String  | false    | `actions@github.com`                                          |
+| `extra_text_when_modified` | `file`          | When the file already exists, this string will be added before the content                             | String  | false    | `"# From issues"`                                             |
+| `target_issue_repo`        | `issue`         | Select a repository with a username whose issue you want to transfer (e.g. `noraworld/issue-recorder`) | String  | false    | `<REPO_NAME>` (the repository where this Action is installed) |
+| `target_issue_number`      | `issue`         | Select an issue number [^target_issue_number]                                                          | String  | false    | `latest`                                                      |
+| `with_date`                | `file`, `issue` | Whether to include the date and time                                                                   | Boolean | false    | `false`                                                       |
+| `timezone`                 | `file`, `issue` | Your timezone                                                                                          | String  | false    | `Etc/GMT`                                                     |
+| `time_format`              | `file`, `issue` | Time format                                                                                            | String  | false    | `MMM d, yyyy, h:mm a ZZZZ`                                    |
+| `with_header`              | `file`, `issue` | Prepend a header content at the beginning of a file                                                    | String  | false    | `""`                                                          |
+| `with_quote`               | `file`, `issue` | Specify the mode name and whether to encompass the whole content with a quote for those modes          | String  | false    | `""`                                                          |
 
 It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to `file` and specify `target_issue_repo`, the option is merely ignored.
 
