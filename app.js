@@ -89,7 +89,7 @@ function buildContent(comments, issueBody, withQuote) {
 
   comments.forEach((comment) => {
     if (!isFirstComment || issueBody) {
-      content += withQuote ? `${newline}>---${newline}>${newline}` : `${newline}---${newline}${newline}`
+      content += withQuote ? `${newline}> ---${newline}${newline}` : `${newline}---${newline}${newline}`
     }
     isFirstComment = false
 
