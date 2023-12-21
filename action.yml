@@ -22,6 +22,10 @@ inputs:
     description: This value will be used for git commit
     required: false
     default: actions@github.com
+  overwrite_when_modified:
+    description: When the file already exists, the content will be replaced with a new one
+    required: false
+    default: ""
   extra_text_when_modified:
     description: When the file already exists, this string will be added before the content
     required: false
@@ -97,6 +101,7 @@ runs:
         FILEPATH: ${{ inputs.filepath }}
         COMMITTER_NAME: ${{ inputs.committer_name }}
         COMMITTER_EMAIL: ${{ inputs.committer_email }}
+        OVERWRITE_WHEN_MODIFIED: ${{ inputs.overwrite_when_modified }}
         EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
         NOTIFICATION_COMMENT: ${{ inputs.notification_comment }}
         TARGET_ISSUE_REPO: ${{ inputs.target_issue_repo }}

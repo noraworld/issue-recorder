@@ -113,7 +113,10 @@ function commit(issueBody, content) {
   let existingContent = ''
   let commitMessage = ''
   if (fs.existsSync(filepath)) {
-    existingContent = `${fs.readFileSync(filepath)}${newline}${process.env.EXTRA_TEXT_WHEN_MODIFIED}${newline}`
+    if (!process.env.OVERWRITE_WHEN_MODIFIED) {
+      existingContent = `${fs.readFileSync(filepath)}${newline}${process.env.EXTRA_TEXT_WHEN_MODIFIED}${newline}`
+    }
+
     commitMessage = `Update ${path.basename(filepath)}`
   }
   else {
