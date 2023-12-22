@@ -156,7 +156,7 @@ function commit(issueBody, content) {
       )
       .replaceAll(
         '<FILE_URL>',
-        `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_REF_NAME}/${filepath}`
+        `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_REF_NAME}/${githubFlavoredPercentEncode(filepath)}`
       )
 
     fs.writeFileSync(tmpFile, notification_comment)
@@ -233,6 +233,22 @@ function formattedDateTime(timestamp) {
 
 function encompassWithQuote(str) {
   return `> ${str.replaceAll(/(\r\n|\r|\n)/g, '$&> ')}`
+}
+
+// None of the JavaScript encode functions has the same specification as what GitHub offers.
+//
+//   * "escape()" is deprecated and may not be supported in the future. Besides, parentheses are encoded even though it is not necessary.
+//   * "encodeURI()" is not sufficient because it doesn't encode the question mark "?" which has to be converted into "%3F."
+//   * "encodeURIComponent()" converts the slash letters to show the directory structures into "%2F," which looks odd.
+//
+//   https://stackoverflow.com/questions/332872/encode-url-in-javascript#answer-332897
+//
+// We considered using "encodeURIComponent()" to exceptionally disable the encoding of the slash symbol,
+// but decided to implement it on our own because we judged it to be somewhat complicated.
+//
+// TODO: The current implementation is not sufficient. It may be missing some of the characters that should be encoded.
+function githubFlavoredPercentEncode(str) {
+  return str.replaceAll(/\?/g, '%3F')
 }
 
 function eliminateBackQuote(str) {
