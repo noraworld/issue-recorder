@@ -242,6 +242,7 @@ function encompassWithQuote(str) {
 //   * "encodeURIComponent()" converts the slash letters to show the directory structures into "%2F," which looks odd.
 //
 //   https://stackoverflow.com/questions/332872/encode-url-in-javascript#answer-332897
+//   https://github.com/noraworld/to-do/issues/387
 //
 // We considered using "encodeURIComponent()" to exceptionally disable the encoding of the slash symbol,
 // but decided to implement it on our own because we judged it to be somewhat complicated.
