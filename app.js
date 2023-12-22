@@ -249,7 +249,9 @@ function encompassWithQuote(str) {
 //
 // TODO: The current implementation is not sufficient. It may be missing some of the characters that should be encoded.
 function githubFlavoredPercentEncode(str) {
-  return str.replaceAll(/\?/g, '%3F')
+  return str
+    .replaceAll(/\?/g, '%3F')
+    .replaceAll(/\#/g, '%23')
 }
 
 function eliminateBackQuote(str) {
