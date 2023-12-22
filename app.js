@@ -142,8 +142,8 @@ function commit(issueBody, content) {
 
   execSync(`git config --global user.name "${process.env.COMMITTER_NAME}"`)
   execSync(`git config --global user.email "${process.env.COMMITTER_EMAIL}"`)
-  execSync(`git add "${filepath}"`)
-  execSync(`git commit -m "${commitMessage}"`)
+  execSync(`git add "${sanitizeDoubleQuote(filepath)}"`)
+  execSync(`git commit -m "${sanitizeDoubleQuote(commitMessage)}"`)
   execSync('git push')
 
   if (process.env.NOTIFICATION_COMMENT) {
@@ -258,6 +258,10 @@ function eliminateBackQuote(str) {
 
 function convertSpaceIntoHyphen(str) {
   return str.replaceAll(/\s/g, '-')
+}
+
+function sanitizeDoubleQuote(str) {
+  return str.replaceAll(/"/g, '\\"')
 }
 
 run().catch((error) => {
