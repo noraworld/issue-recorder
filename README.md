@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Issue Recorder
-        uses: noraworld/issue-recorder@v0.1.1
+        uses: noraworld/issue-recorder@v0.2.1
         with:
           mode: file
           filepath: .issues/${{ github.event.issue.title }}.md
