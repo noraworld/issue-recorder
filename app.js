@@ -221,10 +221,10 @@ function buildFilepath() {
       if (Number.isInteger(dirB)) dirB--
       dirB = String(Math.floor(dirB) % 100).padStart(2, '0')
 
-      filepath = `issues/${dirA}/${dirB}/${issueNumber}_${convertSpaceIntoHyphen(eliminateBackQuote(issueTitle))}.md`
+      filepath = `issues/${dirA}/${dirB}/${issueNumber}_${convertFilenameSpecialCharacters(issueTitle)}.md`
       break
     default:
-      filepath = convertSpaceIntoHyphen(eliminateBackQuote(process.env.FILEPATH))
+      filepath = convertFilenameSpecialCharacters(process.env.FILEPATH)
       break
   }
 
@@ -261,12 +261,10 @@ function githubFlavoredPercentEncode(str) {
     .replaceAll(/\\/g, '%5C')
 }
 
-function eliminateBackQuote(str) {
-  return str.replaceAll(/`/g, '')
-}
-
-function convertSpaceIntoHyphen(str) {
-  return str.replaceAll(/\s/g, '-')
+function convertFilenameSpecialCharacters(str) {
+  return str
+    .replaceAll(/`/g, '')
+    .replaceAll(/\s/g, '-')
 }
 
 function sanitizeShellSpecialCharacters(str) {
