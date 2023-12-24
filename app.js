@@ -272,8 +272,8 @@ function convertSpaceIntoHyphen(str) {
 function sanitizeShellSpecialCharacters(str) {
   // https://stackoverflow.com/questions/3903488/javascript-backslash-in-variables-is-causing-an-error#answer-3903834
   return str
-    .replaceAll(/"/g, '\\"')
     .replaceAll(/\\/g, '\\\\')
+    .replaceAll(/"/g, '\\"')
 }
 
 run().catch((error) => {
