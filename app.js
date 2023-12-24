@@ -211,7 +211,7 @@ function buildFilepath() {
 
       const issueNumber = process.env.ISSUE_NUMBER
       // There is no need to sanitize backslashes or invoke buildFileTitle().
-      const issueTitle = process.env.ISSUE_TITLE
+      const issueTitle = process.env.ISSUE_TITLE.replaceAll(/\//g, '\\')
 
       let dirA = issueNumber / 10000
       if (Number.isInteger(dirA)) dirA--
