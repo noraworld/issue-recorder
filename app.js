@@ -130,7 +130,7 @@ function commit(issueBody, content) {
 
   let title = ''
   if (process.env.WITH_TITLE) {
-    title = `# [${process.env.ISSUE_TITLE}](${process.env.ISSUE_URL})${newline}`
+    title = `# [${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
   const dir = path.dirname(filepath)
@@ -142,8 +142,8 @@ function commit(issueBody, content) {
 
   execSync(`git config --global user.name "${process.env.COMMITTER_NAME}"`)
   execSync(`git config --global user.email "${process.env.COMMITTER_EMAIL}"`)
-  execSync(`git add "${sanitizeDoubleQuote(filepath)}"`)
-  execSync(`git commit -m "${sanitizeDoubleQuote(commitMessage)}"`)
+  execSync(`git add "${sanitizeShellSpecialCharacters(filepath)}"`)
+  execSync(`git commit -m "${sanitizeShellSpecialCharacters(commitMessage)}"`)
   execSync('git push')
 
   if (process.env.NOTIFICATION_COMMENT) {
@@ -178,7 +178,7 @@ function post(issueBody, content) {
 
   let title = ''
   if (process.env.WITH_TITLE) {
-    title = `# ✅ [${process.env.ISSUE_TITLE}](${process.env.ISSUE_URL})${newline}`
+    title = `# ✅ [${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
   let fold = ''
@@ -198,14 +198,20 @@ function post(issueBody, content) {
   fs.unlinkSync(tmpFile)
 }
 
+function buildFileTitle() {
+  return process.env.ISSUE_TITLE.replaceAll(/\\/g, '\\\\')
+}
+
 function buildFilepath() {
   let filepath = ''
 
   switch (process.env.FILEPATH) {
     case 'default':
       // https://github.com/noraworld/to-do/issues/173#issuecomment-1835656402
+
       const issueNumber = process.env.ISSUE_NUMBER
-      const issueTitle  = process.env.ISSUE_TITLE
+      // There is no need to sanitize backslashes or invoke buildFileTitle().
+      const issueTitle = process.env.ISSUE_TITLE
 
       let dirA = issueNumber / 10000
       if (Number.isInteger(dirA)) dirA--
@@ -252,6 +258,7 @@ function githubFlavoredPercentEncode(str) {
   return str
     .replaceAll(/\?/g, '%3F')
     .replaceAll(/\#/g, '%23')
+    .replaceAll(/\\/g, '%5C')
 }
 
 function eliminateBackQuote(str) {
@@ -262,8 +269,11 @@ function convertSpaceIntoHyphen(str) {
   return str.replaceAll(/\s/g, '-')
 }
 
-function sanitizeDoubleQuote(str) {
-  return str.replaceAll(/"/g, '\\"')
+function sanitizeShellSpecialCharacters(str) {
+  // https://stackoverflow.com/questions/3903488/javascript-backslash-in-variables-is-causing-an-error#answer-3903834
+  return str
+    .replaceAll(/"/g, '\\"')
+    .replaceAll(/\\/g, '\\\\')
 }
 
 run().catch((error) => {
