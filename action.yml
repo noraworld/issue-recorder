@@ -34,6 +34,10 @@ inputs:
     description: Specify the comment content to leave after saving to a file
     required: false
     default: ""
+  target_file_repo:
+    description: Select a repository with a username whose file you want to commit
+    required: false
+    default: ""
   target_issue_repo:
     description: Select a repository with a username whose issue you want to transfer
     required: false
@@ -104,6 +108,7 @@ runs:
         OVERWRITE_WHEN_MODIFIED: ${{ inputs.overwrite_when_modified }}
         EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
         NOTIFICATION_COMMENT: ${{ inputs.notification_comment }}
+        TARGET_FILE_REPO: ${{ inputs.TARGET_FILE_REPO }}
         TARGET_ISSUE_REPO: ${{ inputs.target_issue_repo }}
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
