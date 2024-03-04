@@ -117,7 +117,7 @@ async function commit(issueBody, content) {
   let file = await getFileFromRepo(filepath)
   if (file) {
     if (!process.env.OVERWRITE_WHEN_MODIFIED) {
-      // TODO: Use the content of variable "file" instead of readFileSync()
+      // FIXME: Use the content of variable "file" instead of readFileSync()
       existingContent = `${fs.readFileSync(filepath)}${newline}${process.env.EXTRA_TEXT_WHEN_MODIFIED}${newline}`
     }
 
@@ -197,6 +197,7 @@ async function getFileFromRepo(path) {
   const targetFileRepo  = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   const [ owner, repo ] = targetFileRepo.split('/')
 
+  // TODO: It might be better not to use try-catch.
   try {
     const response = await octokit.repos.getContent({
       owner,
