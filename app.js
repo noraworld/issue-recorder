@@ -141,6 +141,7 @@ async function commit(issueBody, content) {
 
   await push(`${header}${existingContent}${title}${issueBody}${content}`, commitMessage, filepath, sha)
 
+  const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   if (process.env.NOTIFICATION_COMMENT) {
     // https://docs.github.com/en/actions/learn-github-actions/variables
     let notification_comment =
@@ -151,7 +152,7 @@ async function commit(issueBody, content) {
       )
       .replaceAll(
         '<FILE_URL>',
-        `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_REF_NAME}/${githubFlavoredPercentEncode(filepath)}`
+        `${process.env.GITHUB_SERVER_URL}/${targetFileRepo}/blob/${process.env.GITHUB_REF_NAME}/${githubFlavoredPercentEncode(filepath)}`
       )
 
     fs.writeFileSync(tmpFile, notification_comment)
@@ -197,7 +198,7 @@ async function getFileFromRepo(path) {
   const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
                   new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
                   new Octokit({ auth: process.env.GITHUB_TOKEN })
-  const targetFileRepo  = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
+  const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   const [ owner, repo ] = targetFileRepo.split('/')
 
   // TODO: It might be better not to use try-catch.
@@ -228,7 +229,7 @@ async function push(content, commitMessage, filepath, sha) {
   const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
                   new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
                   new Octokit({ auth: process.env.GITHUB_TOKEN })
-  const targetFileRepo  = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
+  const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   const [ owner, repo ] = targetFileRepo.split('/')
 
   await octokit.repos.createOrUpdateFileContents({
