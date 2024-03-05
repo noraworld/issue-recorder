@@ -74,6 +74,10 @@ inputs:
     description: Add an issue title
     required: false
     default: ""
+  custom_title:
+    description: Use a custom title given here instead of the original issue title
+    required: false
+    default: ""
   with_quote:
     description: Whether to encompass the whole content with a quote
     required: false
@@ -118,4 +122,5 @@ runs:
         TIME_FORMAT: ${{ inputs.time_format }}
         WITH_HEADER: ${{ inputs.with_header }}
         WITH_TITLE: ${{ inputs.with_title }}
+        CUSTOM_TITLE: ${{ inputs.custom_title }}
         WITH_QUOTE: ${{ inputs.with_quote }}

@@ -246,7 +246,7 @@ async function push(content, commitMessage, filepath, sha) {
 }
 
 function buildFileTitle() {
-  return process.env.ISSUE_TITLE.replaceAll(/\\/g, '\\\\')
+  return process.env.CUSTOM_TITLE ? process.env.CUSTOM_TITLE : process.env.ISSUE_TITLE.replaceAll(/\\/g, '\\\\')
 }
 
 function buildFilepath() {
