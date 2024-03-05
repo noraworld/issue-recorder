@@ -82,6 +82,10 @@ inputs:
     description: Whether to encompass the whole content with a quote
     required: false
     default: ""
+  personal_access_token:
+    description: Specify your personal access token name stored in your repository
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -124,3 +128,4 @@ runs:
         WITH_TITLE: ${{ inputs.with_title }}
         CUSTOM_TITLE: ${{ inputs.custom_title }}
         WITH_QUOTE: ${{ inputs.with_quote }}
+        PERSONAL_ACCESS_TOKEN: ${{ inputs.personal_access_token }}

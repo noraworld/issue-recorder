@@ -36,6 +36,7 @@ jobs:
           timezone: Etc/GMT
           time_format: h:mm a · MMM d, yyyy (ZZZZ)
           with_header: "---\r\npublished: true\r\n---"
+          personal_access_token: GH_TOKEN
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
@@ -52,7 +53,7 @@ Here are the options you can customize. All options are not necessarily required
 | `overwrite_when_modified`  | `file`          | When the file already exists, the content will be replaced with a new one                                                                                                                                                            | `""`                                                          | Boolean | False    |
 | `extra_text_when_modified` | `file`          | When the file already exists, this string will be added before the content                                                                                                                                                           | `"# From issues"`                                             | String  | False    |
 | `notification_comment`     | `file`          | Leave the specified comment here after a file is created or modified ([details](#special-identifier-for-notification_comment))                                                                                                       | `""`                                                          | String  | False    |
-| `target_file_repo`         | `file`          | Select a repository with a username whose file you want to commit (e.g. `noraworld/issue-recorder`)                                                                                                                                  | `<REPO_NAME>` (the repository where this Action is installed) | String  | False    |
+| `target_file_repo`         | `file`          | Select a repository with a username whose file you want to commit (e.g. `noraworld/issue-recorder`) [^token_permission]                                                                                                              | `<REPO_NAME>` (the repository where this Action is installed) | String  | False    |
 | `target_issue_repo`        | `issue`         | Select a repository with a username whose issue you want to transfer (e.g. `noraworld/issue-recorder`)                                                                                                                               | `<REPO_NAME>` (the repository where this Action is installed) | String  | False    |
 | `target_issue_number`      | `issue`         | Select an issue number [^target_issue_number]                                                                                                                                                                                        | `latest`                                                      | String  | False    |
 | `fold_threshold`           | `issue`         | When the total number of letters in the body and the comments is greater than the specified number here, they are folded [^fold_threshold]                                                                                           | `infinity`                                                    | Integer | False    |
@@ -64,6 +65,7 @@ Here are the options you can customize. All options are not necessarily required
 | `with_title`               | `file`, `issue` | Whether to include the issue title                                                                                                                                                                                                   | `""`                                                          | Boolean | False    |
 | `custom_title`             | `file`, `issue` | Use a custom title given here instead of the original issue title                                                                                                                                                                    | `""`                                                          | String  | False    |
 | `with_quote`               | `file`, `issue` | Specify the mode name and whether to encompass the whole content with a quote for those modes                                                                                                                                        | `""`                                                          | String  | False    |
+| `personal_access_token`    | `file`, `issue` | Specify your personal access token name (key) stored in your repository [^token_permission]                                                                                                                                          | `""`                                                          | String  | False    |
 
 It doesn't take any effect if you specify an option that is not relevant to the mode you select. For example, if you set a mode to `file` and specify `target_issue_repo`, the option is merely ignored.
 
@@ -72,6 +74,8 @@ It doesn't take any effect if you specify an option that is not relevant to the 
 [^target_issue_number]: If you specify the special identifier `latest`, the latest open issue on the specified repository will be obtained. If there is no open issue in the target repository, the action fails.
 
 [^fold_threshold]: If you specify the empty string `""`, the special identifier `infinity`, or don't specify anything, this option will be disabled.
+
+[^token_permission]: If you don't specify `personal_access_token`, [`GITHUB_TOKEN`](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#about-the-github_token-secret) will be used. It is useful, but it has lower permissions, so you need your personal access token with stronger permissions sometimes, like when you want to save a file to another repository by using the `target_file_repo` option. For details on how to retrieve and store your personal access token, see [here](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#granting-additional-permissions). Don't forget to set the environment variable under the `env` key in your YAML file. The [Workflow sample](#workflow-sample) section might help you.
 
 #### Time format sample
 Here are some examples of the time formats. You can customize the time format other than the examples below.
