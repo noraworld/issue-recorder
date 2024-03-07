@@ -25,14 +25,14 @@ async function run() {
       case 'file':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false
-        issueBody = buildIssueBody(withQuote)
+        issueBody = (process.env.SKIP_BODY.includes('file')) ? '' : buildIssueBody(withQuote)
         content = buildContent(comments, issueBody, withQuote)
         await commit(issueBody, content)
         break
       case 'issue':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false
-        issueBody = buildIssueBody(withQuote)
+        issueBody = (process.env.SKIP_BODY.includes('issue')) ? '' : buildIssueBody(withQuote)
         content = buildContent(comments, issueBody, withQuote)
         post(issueBody, content)
         break

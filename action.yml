@@ -82,6 +82,10 @@ inputs:
     description: Whether to encompass the whole content with a quote
     required: false
     default: ""
+  skip_body:
+    description: Whether to skip the body of an issue
+    required: false
+    default: ""
   personal_access_token:
     description: Specify your personal access token name stored in your repository
     required: false
@@ -128,4 +132,5 @@ runs:
         WITH_TITLE: ${{ inputs.with_title }}
         CUSTOM_TITLE: ${{ inputs.custom_title }}
         WITH_QUOTE: ${{ inputs.with_quote }}
+        SKIP_BODY: ${{ inputs.skip_body }}
         PERSONAL_ACCESS_TOKEN: ${{ inputs.personal_access_token }}
