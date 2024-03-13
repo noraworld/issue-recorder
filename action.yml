@@ -54,6 +54,10 @@ inputs:
     description: Specify a summary string when an issue is folded
     required: false
     default: ""
+  title_prefix:
+    description: Specify additional letters or emojis
+    required: false
+    default: ""
   with_date:
     description: Whether to include the date and time
     required: false
@@ -125,6 +129,7 @@ runs:
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
+        TITLE_PREFIX: ${{ inputs.title_prefix }}
         WITH_DATE: ${{ inputs.with_date }}
         TIMEZONE: ${{ inputs.timezone }}
         TIME_FORMAT: ${{ inputs.time_format }}

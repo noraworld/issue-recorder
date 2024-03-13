@@ -191,7 +191,8 @@ function post(issueBody, content) {
 
   let title = ''
   if (process.env.WITH_TITLE) {
-    title = `# ✅ [${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
+    const titlePrefix = process.env.TITLE_PREFIX ? `${process.env.TITLE_PREFIX} ` : ''
+    title = `# ${titlePrefix}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
   let fold = ''
