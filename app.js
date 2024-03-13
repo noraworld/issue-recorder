@@ -10,6 +10,7 @@ const { Base64 } = require('js-base64')
 // We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
 const newline = '\r\n'
 const tmpFile = 'tmp.md'
+const pushRetryMaximum = 5
 
 async function run() {
   let modes = process.env.MODE.split(',').map((element) => element.trim())
@@ -231,23 +232,39 @@ async function push(content, commitMessage, filepath, sha) {
   const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   const [ owner, repo ] = targetFileRepo.split('/')
 
-  await octokit.repos.createOrUpdateFileContents({
-    owner: owner,
-    repo: repo,
-    path: filepath,
-    message: commitMessage,
-    content: Base64.encode(content),
-    // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents:~:text=Required%20if%20you%20are%20updating%20a%20file.%20The%20blob%20SHA%20of%20the%20file%20being%20replaced.
-    sha: sha,
-    committer: {
-      name: process.env.COMMITTER_NAME,
-      email: process.env.COMMITTER_EMAIL,
-    },
-    author: {
-      name: process.env.COMMITTER_NAME,
-      email: process.env.COMMITTER_EMAIL,
-    },
-  })
+  for (let i = 1; i <= pushRetryMaximum; i++) {
+    try {
+      await octokit.repos.createOrUpdateFileContents({
+        owner: owner,
+        repo: repo,
+        path: filepath,
+        message: commitMessage,
+        content: Base64.encode(content),
+        // https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents:~:text=Required%20if%20you%20are%20updating%20a%20file.%20The%20blob%20SHA%20of%20the%20file%20being%20replaced.
+        sha: sha,
+        committer: {
+          name: process.env.COMMITTER_NAME,
+          email: process.env.COMMITTER_EMAIL,
+        },
+        author: {
+          name: process.env.COMMITTER_NAME,
+          email: process.env.COMMITTER_EMAIL,
+        },
+      })
+
+      break // succeed
+    }
+    catch (error) {
+      console.error(error)
+
+      if (i === pushRetryMaximum) {
+        console.error(`The attempt #${i} has failed. No more attempts will be made. Sorry, please try again.`)
+      }
+      else {
+        console.error(`The attempt #${i} has failed. Move on to the next attempt.`)
+      }
+    }
+  }
 }
 
 function buildFileTitle() {
