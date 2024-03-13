@@ -201,7 +201,6 @@ async function getFileFromRepo(path) {
   const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   const [ owner, repo ] = targetFileRepo.split('/')
 
-  // TODO: It might be better not to use try-catch.
   try {
     const response = await octokit.repos.getContent({
       owner,
