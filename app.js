@@ -167,6 +167,10 @@ async function commit(issueBody, content) {
         '<FILE_URL_WITH_SHA>',
         `${process.env.GITHUB_SERVER_URL}/${targetFileRepo}/blob/${commitResult.data.commit.sha}/${githubFlavoredPercentEncode(filepath)}`
       )
+      .replaceAll(
+        '<REF_NAME>',
+        process.env.GITHUB_REF_NAME
+      )
 
     fs.writeFileSync(tmpFile, notification_comment)
     execSync(`gh issue comment "${process.env.ISSUE_NUMBER}" --body-file "${tmpFile}"`)
