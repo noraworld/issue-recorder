@@ -90,12 +90,18 @@ Here are some examples of the time formats. You can customize the time format ot
 #### Special identifier for `notification_comment`
 You can use the following special identifiers for `notification_comment`.
 
-| Identifier    | Replaced with                        |
-| ------------- | ------------------------------------ |
-| `<FILE_PATH>` | A file path configured in `filepath` |
-| `<FILE_URL>`  | A full URL for a file                |
+| Identifier            | Replaced with                        | Example                                                                                                                               |
+| --------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `<FILE_PATH>`         | A file path configured in `filepath` | `issues/00/42/4201_purchase-boiled-eggs.md`                                                                                           |
+| `<FILE_URL>`          | A full URL for a file                | `https://github.com/noraworld/issue-recorder/blob/main/issues/00/42/4201_purchase-boiled-eggs.md`                                     |
+| `<FILE_URL_WITH_SHA>` | A full URL for a file with SHA       | `https://github.com/noraworld/issue-recorder/blob/5c26bf402176693178f8497324fc9b862bdd4a3b/issues/00/42/4201_purchase-boiled-eggs.md` |
+| `<REF_NAME>`          | A branch name pointing to a commit   | `main`                                                                                                                                |
 
-For instance, if you specify `The content of this task was saved in [<FILE_PATH>](<FILE_URL>)`, the actual comment is like `The content of this task was saved in [issues/00/42/4201_purchase-boiled-eggs.md](https://github.com/noraworld/issue-recorder/blob/main/issues/00/42/4201_purchase-boiled-eggs.md)`.
+For instance, if you specify `The content of this task was saved in [<FILE_PATH>](<FILE_URL>)`, the actual comment is like this:
+
+```
+The content of this task was saved in [issues/00/42/4201_purchase-boiled-eggs.md](https://github.com/noraworld/issue-recorder/blob/main/issues/00/42/4201_purchase-boiled-eggs.md)
+```
 
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.
