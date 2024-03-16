@@ -38,6 +38,10 @@ inputs:
     description: Select a repository with a username whose file you want to commit
     required: false
     default: ""
+  title_prefix_for_file:
+    description: Specify additional letters or emojis
+    required: false
+    default: ""
   target_issue_repo:
     description: Select a repository with a username whose issue you want to transfer
     required: false
@@ -54,7 +58,7 @@ inputs:
     description: Specify a summary string when an issue is folded
     required: false
     default: ""
-  title_prefix:
+  title_prefix_for_issue:
     description: Specify additional letters or emojis
     required: false
     default: ""
@@ -125,11 +129,12 @@ runs:
         EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
         NOTIFICATION_COMMENT: ${{ inputs.notification_comment }}
         TARGET_FILE_REPO: ${{ inputs.TARGET_FILE_REPO }}
+        TITLE_PREFIX_FOR_FILE: ${{ inputs.title_prefix_for_file }}
         TARGET_ISSUE_REPO: ${{ inputs.target_issue_repo }}
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
-        TITLE_PREFIX: ${{ inputs.title_prefix }}
+        TITLE_PREFIX_FOR_ISSUE: ${{ inputs.title_prefix_for_issue }}
         WITH_DATE: ${{ inputs.with_date }}
         TIMEZONE: ${{ inputs.timezone }}
         TIME_FORMAT: ${{ inputs.time_format }}

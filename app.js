@@ -145,7 +145,8 @@ async function commit(issueBody, content) {
 
   let title = ''
   if (process.env.WITH_TITLE) {
-    title = `# [${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
+    const titlePrefixForFile = process.env.TITLE_PREFIX_FOR_FILE ? `${process.env.TITLE_PREFIX_FOR_FILE} ` : ''
+    title = `# ${titlePrefixForFile}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
   const commitResult = await push(`${header}${existingContent}${title}${issueBody}${content}`, commitMessage, filepath, sha)
@@ -191,8 +192,8 @@ function post(issueBody, content) {
 
   let title = ''
   if (process.env.WITH_TITLE) {
-    const titlePrefix = process.env.TITLE_PREFIX ? `${process.env.TITLE_PREFIX} ` : ''
-    title = `# ${titlePrefix}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
+    const titlePrefixForIssue = process.env.TITLE_PREFIX_FOR_ISSUE ? `${process.env.TITLE_PREFIX_FOR_ISSUE} ` : ''
+    title = `# ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
   let fold = ''
