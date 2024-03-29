@@ -64,7 +64,7 @@ Here are the options you can customize. All options are not necessarily required
 | `with_date`                        | Whether to include the date and time                                                                                                                                                                                                 | `file`, `issue` | Boolean | `""`                                                          | `true`                                                                        |
 | `timezone`                         | Your timezone                                                                                                                                                                                                                        | `file`, `issue` | String  | `Etc/GMT`                                                     | `Asia/Tokyo`                                                                  |
 | `time_format`                      | Time format ([sample](#time-format-sample))                                                                                                                                                                                          | `file`, `issue` | String  | `MMM d, yyyy, h:mm a ZZZZ`                                    | `h:mm a · MMM d, yyyy (ZZZZ)`                                                 |
-| `with_header`                      | Prepend a header content at the beginning of a file                                                                                                                                                                                  | `file`, `issue` | String  | `""`                                                          | `"---\r\npublished: true\r\n---"`                                             |
+| `with_header`                      | Prepend a header content at the beginning of a file ([details](#special-identifier-for-with_header))                                                                                                                                 | `file`, `issue` | String  | `""`                                                          | `"---\r\npublished: true\r\n---"`                                             |
 | `with_title`                       | Whether to include the issue title                                                                                                                                                                                                   | `file`, `issue` | Boolean | `""`                                                          | `true`                                                                        |
 | `custom_title`                     | Use a custom title given here instead of the original issue title                                                                                                                                                                    | `file`, `issue` | String  | `""`                                                          | `${{ env.TITLE }}`                                                            |
 | `with_quote`                       | Specify the mode name and whether to encompass the whole content with a quote for those modes                                                                                                                                        | `file`, `issue` | String  | `""`                                                          | `file`, `issue`, `"file, issue"`                                              |
@@ -104,6 +104,17 @@ For instance, if you specify `The content of this task was saved in [<FILE_PATH>
 ```
 The content of this task was saved in [issues/00/42/4201_purchase-boiled-eggs.md](https://github.com/noraworld/issue-recorder/blob/main/issues/00/42/4201_purchase-boiled-eggs.md)
 ```
+
+#### Special identifier for `with_header`
+You can use the following special identifiers for `with_header`.
+
+| Identifier     | Replaced with                             | Type                                       | Example                          |
+| -------------- | ----------------------------------------- | ------------------------------------------ | -------------------------------- |
+| `<NUMBER>`     | An issue number                           | Integer                                    | `4201`                           |
+| `<TITLE>`      | An issue title                            | "String"                                   | `"Purchase Boiled Eggs"`         |
+| `<ASSIGNEES>`  | A list of assignees appointed to an issue | Array[<"String", "String", "String", ...>] | `["noraworld"]`                  |
+| `<LABELS>`     | A list of labels attached to an issue     | Array[<"String", "String", "String", ...>] | `["purchase"]`                   |
+| `<CREATED_AT>` | Date and time when an issue is created    | String                                     | `8:02 AM · Mar 29, 2024 (GMT+9)` |
 
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.

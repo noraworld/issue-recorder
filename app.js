@@ -141,6 +141,28 @@ async function commit(issueBody, content) {
   let header = ''
   if (!existingContent && process.env.WITH_HEADER) {
     header = `${process.env.WITH_HEADER}${newline}${newline}`
+    header =
+      header
+      .replaceAll(
+        '<NUMBER>',
+        process.env.ISSUE_NUMBER
+      )
+      .replaceAll(
+        '<TITLE>',
+        `"${buildFileTitle()}"`
+      )
+      .replaceAll(
+        '<ASSIGNEES>',
+        process.env.ISSUE_ASSIGNEES
+      )
+      .replaceAll(
+        '<LABELS>',
+        process.env.ISSUE_LABELS
+      )
+      .replaceAll(
+        '<CREATED_AT>',
+        formattedDateTime(process.env.ISSUE_CREATED_AT)
+      )
   }
 
   let title = ''
