@@ -108,13 +108,13 @@ The content of this task was saved in [issues/00/42/4201_purchase-boiled-eggs.md
 #### Special identifier for `with_header`
 You can use the following special identifiers for `with_header`.
 
-| Identifier     | Replaced with                             | Type                                       | Example                          |
-| -------------- | ----------------------------------------- | ------------------------------------------ | -------------------------------- |
-| `<NUMBER>`     | An issue number                           | Integer                                    | `4201`                           |
-| `<TITLE>`      | An issue title                            | "String"                                   | `"Purchase Boiled Eggs"`         |
-| `<ASSIGNEES>`  | A list of assignees appointed to an issue | Array[<"String", "String", "String", ...>] | `["noraworld"]`                  |
-| `<LABELS>`     | A list of labels attached to an issue     | Array[<"String", "String", "String", ...>] | `["purchase"]`                   |
-| `<CREATED_AT>` | Date and time when an issue is created    | String                                     | `8:02 AM · Mar 29, 2024 (GMT+9)` |
+| Identifier     | Replaced with                             | Type                                         | Example                          |
+| -------------- | ----------------------------------------- | -------------------------------------------- | -------------------------------- |
+| `<NUMBER>`     | An issue number                           | `Integer`                                    | `4201`                           |
+| `<TITLE>`      | An issue title                            | `"String"`                                   | `"Purchase Boiled Eggs"`         |
+| `<ASSIGNEES>`  | A list of assignees appointed to an issue | `Array[<"String", "String", "String", ...>]` | `["noraworld"]`                  |
+| `<LABELS>`     | A list of labels attached to an issue     | `Array[<"String", "String", "String", ...>]` | `["purchase"]`                   |
+| `<CREATED_AT>` | Date and time when an issue is created    | `String`                                     | `8:02 AM · Mar 29, 2024 (GMT+9)` |
 
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.
