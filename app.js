@@ -10,7 +10,7 @@ const { Base64 } = require('js-base64')
 // We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
 const newline = '\r\n'
 const tmpFile = 'tmp.md'
-const pushRetryMaximum = 5
+const pushRetryMaximum = 10
 
 async function run() {
   let modes = process.env.MODE.split(',').map((element) => element.trim())
