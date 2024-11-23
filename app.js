@@ -12,6 +12,8 @@ const crypto = require('crypto')
 const newline = '\r\n'
 const tmpFile = 'tmp.md'
 const pushRetryMaximum = 10
+const fixedSalt = generateCryptoHex()
+const fixedSaltRounds = randomInt(10, 20)
 
 // Semicolons are sometimes necessary.
 //   If you omit them, the following error will cause or an unexpected result will be received because the ASI fails.
@@ -137,9 +139,9 @@ function trimPrivateContent(commentBody) {
   let extractedCommentBody = []
 
   const sanitizedCommentBody = commentBody.replace(/(<private>.*?<\/private>)/gs, (_, match) => {
-    let uuid = `[^${generateCryptoHex(7)}]`
-    extractedCommentBody.push({ uuid: uuid, body: match })
-    return uuid
+    let hash = `[^${generateSHA256(match, fixedSalt, fixedSaltRounds)}]`
+    extractedCommentBody.push({ hash: hash, body: match })
+    return hash
   })
 
   return [sanitizedCommentBody, extractedCommentBody]
@@ -148,11 +150,11 @@ function trimPrivateContent(commentBody) {
 function buildPrivateContent(privateDataJson) {
   if (!privateDataJson.length) return ''
 
-  let privateContent = `| UUID | Content |${newline}| :---: | --- |`
+  let privateContent = `| Reference | Content |${newline}| :---: | --- |`
 
   privateDataJson.forEach((json) => {
     privateContent +=
-      `${newline}| \`${json.uuid}\` | ${json.body
+      `${newline}| \`${json.hash}\` | ${json.body
       .replace(/^<private>/, '')
       .replace(/<\/private>$/, '')
       .replace(/(\r\n|\r|\n)/g, '<br>')} |`
@@ -162,7 +164,7 @@ function buildPrivateContent(privateDataJson) {
 
   privateDataJson.forEach((json) => {
     privateContent +=
-      `${newline}${json.uuid}: ${json.body
+      `${newline}${json.hash}: ${json.body
       .replace(/^<private>/, '')
       .replace(/<\/private>$/, '')
       .replace(/(\r\n|\r|\n)/g, '<br>')}`
@@ -503,10 +505,24 @@ function sanitizeShellSpecialCharacters(str) {
     .replaceAll(/"/g, '\\"')
 }
 
-function generateCryptoHex(length = 8) {
+function generateSHA256(string = '', salt = '', saltRounds = 1) {
+  let hash = string + salt
+
+  for (let i = 0; i < saltRounds - 1; i++) {
+    hash = crypto.createHash('sha256').update(hash).digest()
+  }
+
+  return crypto.createHash('sha256').update(hash).digest('hex')
+}
+
+function generateCryptoHex(length = 16) {
   const bytesLength = Math.ceil(length / 2)
 
   return crypto.randomBytes(bytesLength).toString('hex').slice(0, length)
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 run().catch((error) => {
