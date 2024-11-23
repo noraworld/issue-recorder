@@ -36,7 +36,7 @@ async function run() {
       case 'file':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
-        [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? '' : buildIssueBody(withQuote); // asi
+        [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? ['', []] : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
         privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
         privateContent = buildPrivateContent(privateDataJson)
@@ -47,7 +47,7 @@ async function run() {
       case 'issue':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
-        [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? '' : buildIssueBody(withQuote); // asi
+        [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? ['', []] : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
         privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
         privateContent = buildPrivateContent(privateDataJson)
