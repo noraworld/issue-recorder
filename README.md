@@ -116,5 +116,12 @@ You can use the following special identifiers for `with_header`.
 | `<LABELS>`     | A list of labels attached to an issue     | `Array[<"String", "String", "String", ...>]` | `["purchase"]`                   |
 | `<CREATED_AT>` | Date and time when an issue is created    | `String`                                     | `8:02 AM · Mar 29, 2024 (GMT+9)` |
 
+## Development
+You can use `.env` to load the environment variables that are needed in this project and can call it with the `--env-file=.env` option.
+
+```shell
+node --env-file=.env app.js
+```
+
 ## License
 All codes of this project are available under the MIT license. See the [LICENSE](/LICENSE) for more information.
