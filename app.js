@@ -13,6 +13,10 @@ const newline = '\r\n'
 const tmpFile = 'tmp.md'
 const pushRetryMaximum = 10
 
+// Semicolons are sometimes necessary.
+//   If you omit them, the following error will cause or an unexpected result will be received because the ASI fails.
+//   TypeError: Cannot create property 'undefined' on string '' [^asi]
+
 async function run() {
   let modes = process.env.MODE.split(',').map((element) => element.trim())
 
@@ -20,7 +24,9 @@ async function run() {
   let withQuote
   let issueBody
   let content
-  let privateData
+  let extractedIssueBody
+  let extractedCommentBodies
+  let privateDataJson
   let privateContent
 
   for (const mode of modes) {
@@ -28,24 +34,22 @@ async function run() {
     switch (mode) {
       case 'file':
         comments = await getComments()
-        withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false
-        // A semicolon here is necessary!
-        // If you omit it, the following error will cause because the ASI fails.
-        // TypeError: Cannot create property 'undefined' on string '' [^asi]
-        issueBody = (process.env.SKIP_BODY.includes('file')) ? '' : buildIssueBody(withQuote);
-        [content, privateData] = buildContent(comments, issueBody, withQuote)
-        privateContent = buildPrivateContent(privateData)
+        withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
+        [issueBody, extractedIssueBody] = (process.env.SKIP_BODY.includes('file')) ? '' : buildIssueBody(withQuote); // asi
+        [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
+        privateContent = buildPrivateContent(privateDataJson)
 
         postPrivate(privateContent)
         await commit(issueBody, content)
         break
       case 'issue':
         comments = await getComments()
-        withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false
-        // [^asi]
-        issueBody = (process.env.SKIP_BODY.includes('issue')) ? '' : buildIssueBody(withQuote);
-        [content, privateData] = buildContent(comments, issueBody, withQuote)
-        privateContent = buildPrivateContent(privateData)
+        withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
+        [issueBody, extractedIssueBody] = (process.env.SKIP_BODY.includes('issue')) ? '' : buildIssueBody(withQuote); // asi
+        [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
+        privateContent = buildPrivateContent(privateDataJson)
 
         postPrivate(privateContent)
         post(issueBody, content)
@@ -89,26 +93,27 @@ async function getComments() {
 
 function buildIssueBody(withQuote) {
   let issueBody = ''
-  if (!process.env.ISSUE_BODY) return issueBody
+  let extractedIssueBody = []
+  if (!process.env.ISSUE_BODY) return issueBody; // asi
 
-  issueBody = `${process.env.ISSUE_BODY}`
+  [issueBody, extractedIssueBody] = trimPrivateContent(process.env.ISSUE_BODY)
   if (withQuote) issueBody = encompassWithQuote(issueBody)
   issueBody += newline
   if (process.env.WITH_DATE) issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
 
-  return issueBody
+  return [issueBody, extractedIssueBody]
 }
 
 function buildContent(comments, issueBody, withQuote) {
   let content = ''
   let sanitizedCommentBody = ''
   let extractedCommentBody = []
-  let privateData = []
+  let extractedCommentBodies = []
   let isFirstComment = true
 
   comments.forEach((comment) => {
     [sanitizedCommentBody, extractedCommentBody] = trimPrivateContent(comment.body)
-    privateData = privateData.concat(extractedCommentBody)
+    extractedCommentBodies = extractedCommentBodies.concat(extractedCommentBody)
 
     if (!isFirstComment || issueBody) {
       content += withQuote ? `${newline}> ---${newline}${newline}` : `${newline}---${newline}${newline}`
@@ -124,7 +129,7 @@ function buildContent(comments, issueBody, withQuote) {
     content += `${newline}`
   })
 
-  return [content, privateData]
+  return [content, extractedCommentBodies]
 }
 
 function trimPrivateContent(commentBody) {
@@ -139,12 +144,12 @@ function trimPrivateContent(commentBody) {
   return [sanitizedCommentBody, extractedCommentBody]
 }
 
-function buildPrivateContent(privateData) {
-  if (!privateData.length) return ''
+function buildPrivateContent(privateDataJson) {
+  if (!privateDataJson.length) return ''
 
   let privateContent = `| UUID | Content |${newline}| :---: | --- |`
 
-  privateData.forEach((json) => {
+  privateDataJson.forEach((json) => {
     privateContent +=
       `${newline}| \`${json.uuid}\` | ${json.body
       .replace(/^<private>/, '')
@@ -154,7 +159,7 @@ function buildPrivateContent(privateData) {
 
   privateContent += newline
 
-  privateData.forEach((json) => {
+  privateDataJson.forEach((json) => {
     privateContent +=
       `${newline}${json.uuid}: ${json.body
       .replace(/^<private>/, '')
