@@ -139,7 +139,7 @@ function trimPrivateContent(commentBody) {
   let extractedCommentBody = []
 
   const sanitizedCommentBody = commentBody.replace(/(<private>.*?<\/private>)/gs, (_, match) => {
-    let hash = `[^${generateSHA256(match, fixedSalt, fixedSaltRounds)}]`
+    let hash = `[^pvt_${generateSHA256(match, fixedSalt, fixedSaltRounds).slice(0, 7)}]`
     extractedCommentBody.push({ hash: hash, body: match })
     return hash
   })
