@@ -6,6 +6,7 @@ const { execSync } = require('child_process')
 const path = require('path')
 const { DateTime } = require('luxon')
 const { Base64 } = require('js-base64')
+const crypto = require('crypto')
 // When "\n" is used, GitHub will warn you of the following:
 // We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
 const newline = '\r\n'
@@ -19,6 +20,8 @@ async function run() {
   let withQuote
   let issueBody
   let content
+  let privateData
+  let privateContent
 
   for (const mode of modes) {
     // It seems like some function invocations are redundant, but they are necessary.
@@ -26,15 +29,21 @@ async function run() {
       case 'file':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false
-        issueBody = (process.env.SKIP_BODY.includes('file')) ? '' : buildIssueBody(withQuote)
-        content = buildContent(comments, issueBody, withQuote)
+        // A semicolon here is necessary!
+        // If you omit it, the following error will cause because the ASI fails.
+        // TypeError: Cannot create property 'undefined' on string '' [^asi]
+        issueBody = (process.env.SKIP_BODY.includes('file')) ? '' : buildIssueBody(withQuote);
+        [content, privateData] = buildContent(comments, issueBody, withQuote)
+        privateContent = buildPrivateContent(privateData)
         await commit(issueBody, content)
         break
       case 'issue':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false
-        issueBody = (process.env.SKIP_BODY.includes('issue')) ? '' : buildIssueBody(withQuote)
-        content = buildContent(comments, issueBody, withQuote)
+        // [^asi]
+        issueBody = (process.env.SKIP_BODY.includes('issue')) ? '' : buildIssueBody(withQuote);
+        [content, privateData] = buildContent(comments, issueBody, withQuote)
+        privateContent = buildPrivateContent(privateData)
         post(issueBody, content)
         break
       default:
@@ -88,15 +97,21 @@ function buildIssueBody(withQuote) {
 
 function buildContent(comments, issueBody, withQuote) {
   let content = ''
+  let sanitizedCommentBody = ''
+  let extractedCommentBody = []
+  let privateData = []
   let isFirstComment = true
 
   comments.forEach((comment) => {
+    [sanitizedCommentBody, extractedCommentBody] = trimPrivateContent(comment.body)
+    privateData = privateData.concat(extractedCommentBody)
+
     if (!isFirstComment || issueBody) {
       content += withQuote ? `${newline}> ---${newline}${newline}` : `${newline}---${newline}${newline}`
     }
     isFirstComment = false
 
-    content += withQuote ? encompassWithQuote(comment.body) : comment.body
+    content += withQuote ? encompassWithQuote(sanitizedCommentBody) : sanitizedCommentBody
 
     if (process.env.WITH_DATE) {
       content += `${newline}${newline}> ${formattedDateTime(comment.created_at)}`
@@ -105,7 +120,43 @@ function buildContent(comments, issueBody, withQuote) {
     content += `${newline}`
   })
 
-  return content
+  return [content, privateData]
+}
+
+function trimPrivateContent(commentBody) {
+  let extractedCommentBody = []
+
+  const sanitizedCommentBody = commentBody.replace(/(<private>.*?<\/private>)/gs, (_, match) => {
+    let cryptoHex = `[^${generateCryptoHex(7)}]`
+    extractedCommentBody.push({ uuid: cryptoHex, body: match })
+    return cryptoHex
+  })
+
+  return [sanitizedCommentBody, extractedCommentBody]
+}
+
+function buildPrivateContent(privateData) {
+  let privateContent = `| UUID | Content |${newline}| :---: | --- |`
+
+  privateData.forEach((json) => {
+    privateContent +=
+      `${newline}| \`${json.uuid}\` | ${json.body
+      .replace(/^<private>/, '')
+      .replace(/<\/private>$/, '')
+      .replace(/(\r\n|\r|\n)/g, '<br>')} |`
+  })
+
+  privateContent += newline
+
+  privateData.forEach((json) => {
+    privateContent +=
+      `${newline}${json.uuid}: ${json.body
+      .replace(/^<private>/, '')
+      .replace(/<\/private>$/, '')
+      .replace(/(\r\n|\r|\n)/g, '<br>')}`
+  })
+
+  return privateContent
 }
 
 async function commit(issueBody, content) {
@@ -381,6 +432,12 @@ function sanitizeShellSpecialCharacters(str) {
   return str
     .replaceAll(/\\/g, '\\\\')
     .replaceAll(/"/g, '\\"')
+}
+
+function generateCryptoHex(length = 8) {
+  const bytesLength = Math.ceil(length / 2)
+
+  return crypto.randomBytes(bytesLength).toString('hex').slice(0, length)
 }
 
 run().catch((error) => {
