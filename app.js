@@ -35,6 +35,8 @@ async function run() {
         issueBody = (process.env.SKIP_BODY.includes('file')) ? '' : buildIssueBody(withQuote);
         [content, privateData] = buildContent(comments, issueBody, withQuote)
         privateContent = buildPrivateContent(privateData)
+
+        postPrivate(privateContent)
         await commit(issueBody, content)
         break
       case 'issue':
@@ -44,6 +46,8 @@ async function run() {
         issueBody = (process.env.SKIP_BODY.includes('issue')) ? '' : buildIssueBody(withQuote);
         [content, privateData] = buildContent(comments, issueBody, withQuote)
         privateContent = buildPrivateContent(privateData)
+
+        postPrivate(privateContent)
         post(issueBody, content)
         break
       default:
@@ -136,6 +140,8 @@ function trimPrivateContent(commentBody) {
 }
 
 function buildPrivateContent(privateData) {
+  if (!privateData.length) return ''
+
   let privateContent = `| UUID | Content |${newline}| :---: | --- |`
 
   privateData.forEach((json) => {
@@ -282,6 +288,37 @@ function post(issueBody, content) {
   }
 
   fs.writeFileSync(tmpFile, `${title}${fold}${issueBody}${content}${foldEnd}`)
+  execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body-file "${tmpFile}"`)
+  fs.unlinkSync(tmpFile)
+}
+
+// TODO: Consider refactoring because most of the codes is similar to post()
+function postPrivate(privateContent) {
+  if (!privateContent) return false
+
+  let targetIssueRepo = process.env.PRIVATE_TARGET_ISSUE_REPO
+  if (!targetIssueRepo) {
+    // This is a safe condition.
+    // Publishing the private content somewhere implicitly without the user's recognition is so dangerous!
+    console.error('target issue repo is empty')
+    process.exit(1)
+  }
+
+  let targetIssueNumber = ''
+  if (process.env.PRIVATE_TARGET_ISSUE_NUMBER && process.env.PRIVATE_TARGET_ISSUE_NUMBER !== 'latest') {
+    targetIssueNumber = process.env.PRIVATE_TARGET_ISSUE_NUMBER
+  }
+  else {
+    targetIssueNumber = execSync(`gh issue list --repo "${targetIssueRepo}" --limit 1 | awk '{ print $1 }'`).toString().trim()
+  }
+
+  let title = ''
+  if (process.env.WITH_TITLE) {
+    const titlePrefixForIssue = process.env.TITLE_PREFIX_FOR_ISSUE ? `${process.env.TITLE_PREFIX_FOR_ISSUE} ` : ''
+    title = `# ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
+  }
+
+  fs.writeFileSync(tmpFile, `${title}${privateContent}`)
   execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body-file "${tmpFile}"`)
   fs.unlinkSync(tmpFile)
 }
