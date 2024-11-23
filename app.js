@@ -272,7 +272,7 @@ function post(issueBody, content) {
   let title = ''
   if (process.env.WITH_TITLE) {
     const titlePrefixForIssue = process.env.TITLE_PREFIX_FOR_ISSUE ? `${process.env.TITLE_PREFIX_FOR_ISSUE} ` : ''
-    title = `# ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
+    title = `## ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
   let fold = ''
@@ -315,7 +315,7 @@ function postPrivate(privateContent) {
   let title = ''
   if (process.env.WITH_TITLE) {
     const titlePrefixForIssue = process.env.TITLE_PREFIX_FOR_ISSUE ? `${process.env.TITLE_PREFIX_FOR_ISSUE} ` : ''
-    title = `# ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
+    title = `## ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
   fs.writeFileSync(tmpFile, `${title}${privateContent}`)
