@@ -137,9 +137,9 @@ function trimPrivateContent(commentBody) {
   let extractedCommentBody = []
 
   const sanitizedCommentBody = commentBody.replace(/(<private>.*?<\/private>)/gs, (_, match) => {
-    let cryptoHex = `[^${generateCryptoHex(7)}]`
-    extractedCommentBody.push({ uuid: cryptoHex, body: match })
-    return cryptoHex
+    let uuid = `[^${generateCryptoHex(7)}]`
+    extractedCommentBody.push({ uuid: uuid, body: match })
+    return uuid
   })
 
   return [sanitizedCommentBody, extractedCommentBody]
