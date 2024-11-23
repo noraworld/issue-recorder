@@ -19,6 +19,7 @@ const pushRetryMaximum = 10
 
 async function run() {
   let modes = process.env.MODE.split(',').map((element) => element.trim())
+  let skipBody = process.env.SKIP_BODY.split(',').map((element) => element.trim())
 
   let comments
   let withQuote
@@ -35,23 +36,23 @@ async function run() {
       case 'file':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
-        [issueBody, extractedIssueBody] = (process.env.SKIP_BODY.includes('file')) ? '' : buildIssueBody(withQuote); // asi
+        [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? '' : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
         privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
         privateContent = buildPrivateContent(privateDataJson)
 
-        postPrivate(privateContent)
+        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'file') postPrivate(privateContent)
         await commit(issueBody, content)
         break
       case 'issue':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
-        [issueBody, extractedIssueBody] = (process.env.SKIP_BODY.includes('issue')) ? '' : buildIssueBody(withQuote); // asi
+        [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? '' : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
         privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
         privateContent = buildPrivateContent(privateDataJson)
 
-        postPrivate(privateContent)
+        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'issue') postPrivate(privateContent)
         post(issueBody, content)
         break
       default:
@@ -431,6 +432,32 @@ function buildFilepath() {
   }
 
   return filepath
+}
+
+// If you post both in 'file' and 'issue' mode, comments will be duplicated. This function is called to avoid that.
+function getWhichModeToPostPrivateIn(modes, skipBody) {
+  if (modes.includes('file') && !modes.includes('issue')) {
+    return 'file'
+  }
+  else if (modes.includes('issue') && !modes.includes('file')) {
+    return 'issue'
+  }
+  else if (skipBody.includes('file') && !skipBody.includes('issue')) {
+    return 'issue'
+  }
+  else if (skipBody.includes('issue') && !skipBody.includes('file')) {
+    return 'file'
+  }
+  else if (
+    (skipBody.includes('file') && skipBody.includes('issue')) ||
+    (!skipBody.includes('file') && !skipBody.includes('issue'))
+  ) {
+    return 'file' // <- 'issue' is also good. There is no differences.
+  }
+  else {
+    console.error('unexpected pattern has been detected.')
+    process.exit(1)
+  }
 }
 
 function formattedDateTime(timestamp) {
