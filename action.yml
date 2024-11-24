@@ -121,6 +121,7 @@ runs:
     - name: Install packages
       run: npm install
       shell: sh
+      working-directory: $GITHUB_ACTION_PATH
 
     - name: Track issues
       run: node $GITHUB_ACTION_PATH/app.js
