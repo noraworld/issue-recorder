@@ -1,13 +1,14 @@
 'use strict'
 
-const { Octokit } = require('@octokit/rest')
-const fs = require('fs')
-const { execSync } = require('child_process')
-const path = require('path')
+const { Base64 }   = require('js-base64')
+const bcrypt       = require('bcrypt')
+const Buffer       = require('buffer').Buffer
 const { DateTime } = require('luxon')
-const { Base64 } = require('js-base64')
-const bcrypt = require('bcrypt')
-const Buffer = require('buffer').Buffer
+const { execSync } = require('child_process')
+const fs           = require('fs')
+const { Octokit }  = require('@octokit/rest')
+const path         = require('path')
+
 // When "\n" is used, GitHub will warn you of the following:
 // We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
 const newline = '\r\n'
@@ -45,6 +46,7 @@ async function run() {
 
         if (getWhichModeToPostPrivateIn(modes, skipBody) === 'file') postPrivate(privateContent)
         await commit(issueBody, content)
+
         break
       case 'issue':
         comments = await getComments()
@@ -56,10 +58,12 @@ async function run() {
 
         if (getWhichModeToPostPrivateIn(modes, skipBody) === 'issue') postPrivate(privateContent)
         post(issueBody, content)
+
         break
       default:
         console.error(`unknown mode: ${process.env.MODE}`)
         process.exit(1)
+
         break
     }
   }
