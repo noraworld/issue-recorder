@@ -6,14 +6,14 @@ const { execSync } = require('child_process')
 const path = require('path')
 const { DateTime } = require('luxon')
 const { Base64 } = require('js-base64')
-const crypto = require('crypto')
+const bcrypt = require('bcrypt')
+const Buffer = require('buffer').Buffer
 // When "\n" is used, GitHub will warn you of the following:
 // We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
 const newline = '\r\n'
 const tmpFile = 'tmp.md'
 const pushRetryMaximum = 10
-const fixedSalt = generateCryptoHex()
-const fixedSaltRounds = randomInt(10, 20)
+const fixedSalt = bcrypt.genSaltSync(randomInt(10, 14))
 
 // Semicolons are sometimes necessary.
 //   If you omit them, the following error will cause or an unexpected result will be received because the ASI fails.
@@ -139,7 +139,7 @@ function trimPrivateContent(commentBody) {
   let extractedCommentBody = []
 
   const sanitizedCommentBody = commentBody.replace(/(<private>.*?<\/private>)/gs, (_, match) => {
-    let hash = `[^pvt_${generateSHA256(match, fixedSalt, fixedSaltRounds).slice(0, 7)}]`
+    let hash = `[^pvt_${generateHash(match, fixedSalt)}]`
     extractedCommentBody.push({ hash: hash, body: match })
     return hash
   })
@@ -505,20 +505,15 @@ function sanitizeShellSpecialCharacters(str) {
     .replaceAll(/"/g, '\\"')
 }
 
-function generateSHA256(string = '', salt = '', saltRounds = 1) {
-  let hash = string + salt
-
-  for (let i = 0; i < saltRounds - 1; i++) {
-    hash = crypto.createHash('sha256').update(hash).digest()
+function generateHash(string, salt) {
+  if (typeof salt === 'number') {
+    console.error('salt round must not be used here because the result changes every time it is performed, even if the same value is passed')
+    process.exit(1)
   }
 
-  return crypto.createHash('sha256').update(hash).digest('hex')
-}
-
-function generateCryptoHex(length = 16) {
-  const bytesLength = Math.ceil(length / 2)
-
-  return crypto.randomBytes(bytesLength).toString('hex').slice(0, length)
+  const hashWithSalt = bcrypt.hashSync(string, salt)
+  const hash = hashWithSalt.split('$')[3].slice(22)
+  return Buffer.from(hash, 'base64').toString('hex').slice(0, 7)
 }
 
 function randomInt(min, max) {
