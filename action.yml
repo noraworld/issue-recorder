@@ -120,6 +120,7 @@ runs:
 
     - name: Install packages
       run: npm install
+      shell: sh
 
     - name: Track issues
       run: node $GITHUB_ACTION_PATH/app.js
