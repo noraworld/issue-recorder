@@ -121,10 +121,10 @@ runs:
     - name: Install packages
       run: npm install
       shell: sh
-      working-directory: $GITHUB_ACTION_PATH
+      working-directory: ${{ github.action_path }}
 
     - name: Track issues
-      run: node $GITHUB_ACTION_PATH/app.js
+      run: node ${{ github.action_path }}/app.js
       shell: sh
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -135,7 +135,6 @@ runs:
         ISSUE_LABELS: ${{ toJson(github.event.issue.labels.*.name) }}
         ISSUE_URL: ${{ github.event.issue.html_url }}
         ISSUE_CREATED_AT: ${{ github.event.issue.created_at }}
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
         MODE: ${{ inputs.mode }}
         FILEPATH: ${{ inputs.filepath }}
         COMMITTER_NAME: ${{ inputs.committer_name }}
