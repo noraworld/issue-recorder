@@ -240,7 +240,9 @@ async function commit(issueBody, content) {
     title = `# ${titlePrefixForFile}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
-  const commitResult = await push(`${header}${existingContent}${title}${issueBody}${content}`, commitMessage, filepath, sha)
+  const renderedContent = normalizeNewlines(`${header}${existingContent}${title}${issueBody}${content}`)
+
+  const commitResult = await push(renderedContent, commitMessage, filepath, sha)
 
   const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   if (process.env.NOTIFICATION_COMMENT) {
@@ -474,6 +476,10 @@ function formattedDateTime(timestamp) {
 
 function encompassWithQuote(str) {
   return `> ${str.replaceAll(/(\r\n|\r|\n)/g, '$&> ')}`
+}
+
+function normalizeNewlines(str) {
+  return str.replaceAll(/(\r\n|\r|\n)/g, newline)
 }
 
 // None of the JavaScript encode functions has the same specification as what GitHub offers.
