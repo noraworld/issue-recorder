@@ -110,6 +110,8 @@ Let's say you set the options related to this function like that.
 | `partial_content_start_string`        | `<private>`      |
 | `partial_content_end_string`          | `</private>`     |
 
+And you leave a comment like the following.
+
 ```markdown
 I bumped into one of my best friends <private>(Tevin)</private> and we had a blast.
 ```
@@ -122,11 +124,13 @@ I bumped into one of my best friends [^pvt_1234567] and we had a blast.
 
 As for the original content between `partial_content_start_string` and `partial_content_end_string`, it will be posted to the issue `octocat/repo-c/issues/2` like the following.
 
+```markdown
 | Reference | Content |
 | :---: | --- |
 | `[^pvt_1234567]` | Tevin |
 
 [^pvt_1234567]: Tevin
+```
 
 **NOTE**: You can use the regular expression. In other words, if you want to use characters treated in the regular expression as those characters, you need to sanitize them.
 
