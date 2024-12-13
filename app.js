@@ -158,10 +158,10 @@ function buildContent(comments, issueBody, withQuote) {
 }
 
 function trimPartialContent(commentBody) {
-  if (process.env.PARTIAL_START_STRING === '' || process.env.PARTIAL_END_STRING === '') return [commentBody, []]
+  if (process.env.PARTIAL_CONTENT_START_STRING === '' || process.env.PARTIAL_CONTENT_END_STRING === '') return [commentBody, []]
 
   const partialStringRegExp = new RegExp(
-    '(' + process.env.PARTIAL_START_STRING + '.*?' + process.env.PARTIAL_END_STRING + ')', 'gs'
+    '(' + process.env.PARTIAL_CONTENT_START_STRING + '.*?' + process.env.PARTIAL_CONTENT_END_STRING + ')', 'gs'
   )
   let extractedCommentBody = []
 
@@ -177,13 +177,13 @@ function trimPartialContent(commentBody) {
 function buildPartialContent(partialDataJson) {
   if (!partialDataJson.length) return ''
 
-  if (process.env.PARTIAL_START_STRING === '' || process.env.PARTIAL_END_STRING === '') {
-    console.error('partial data json exists even though PARTIAL_START_STRING or PARTIAL_END_STRING does not exist')
+  if (process.env.PARTIAL_CONTENT_START_STRING === '' || process.env.PARTIAL_CONTENT_END_STRING === '') {
+    console.error('partial data json exists even though PARTIAL_CONTENT_START_STRING or PARTIAL_CONTENT_END_STRING does not exist')
     process.exit(1)
   }
 
-  const partialStartStringRegExp = new RegExp('^' + process.env.PARTIAL_START_STRING, '')
-  const partialEndStringRegExp = new RegExp(process.env.PARTIAL_END_STRING + '$', '')
+  const partialStartStringRegExp = new RegExp('^' + process.env.PARTIAL_CONTENT_START_STRING, '')
+  const partialEndStringRegExp = new RegExp(process.env.PARTIAL_CONTENT_END_STRING + '$', '')
 
   let partialContent = `| Reference | Content |${newline}| :---: | --- |`
 

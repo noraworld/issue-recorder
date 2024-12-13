@@ -58,11 +58,11 @@ inputs:
     description: Select an issue number
     required: false
     default: ""
-  partial_start_string:
+  partial_content_start_string:
     description: partial start string
     required: false
     default: ""
-  partial_end_string:
+  partial_content_end_string:
     description: partial end string
     required: false
     default: ""
@@ -156,8 +156,8 @@ runs:
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
         PARTIAL_CONTENT_TARGET_ISSUE_REPO: ${{ inputs.partial_content_target_issue_repo }}
         PARTIAL_CONTENT_TARGET_ISSUE_NUMBER: ${{ inputs.partial_content_target_issue_number }}
-        PARTIAL_START_STRING: ${{ inputs.partial_start_string }}
-        PARTIAL_END_STRING: ${{ inputs.partial_end_string }}
+        PARTIAL_CONTENT_START_STRING: ${{ inputs.partial_content_start_string }}
+        PARTIAL_CONTENT_END_STRING: ${{ inputs.partial_content_end_string }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
         TITLE_PREFIX_FOR_ISSUE: ${{ inputs.title_prefix_for_issue }}
