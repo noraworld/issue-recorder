@@ -30,8 +30,8 @@ async function run() {
   let content
   let extractedIssueBody
   let extractedCommentBodies
-  let privateDataJson
-  let privateContent
+  let partialDataJson
+  let partialContent
 
   for (const mode of modes) {
     // It seems like some function invocations are redundant, but they are necessary.
@@ -41,11 +41,11 @@ async function run() {
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? ['', []] : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
-        privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
-        privateContent = buildPrivateContent(privateDataJson)
+        partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
+        partialContent = buildPartialContent(partialDataJson)
 
-        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'file' && process.env.DRY_RUN !== 'true') {
-          postPrivate(privateContent)
+        if (getWhichModeToPostPartialContentIn(modes, skipBody) === 'file' && process.env.DRY_RUN !== 'true') {
+          postPartialContent(partialContent)
         }
 
         if (process.env.DRY_RUN !== 'true') {
@@ -62,11 +62,11 @@ async function run() {
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? ['', []] : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
-        privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
-        privateContent = buildPrivateContent(privateDataJson)
+        partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
+        partialContent = buildPartialContent(partialDataJson)
 
-        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'issue' && process.env.DRY_RUN !== 'true') {
-          postPrivate(privateContent)
+        if (getWhichModeToPostPartialContentIn(modes, skipBody) === 'issue' && process.env.DRY_RUN !== 'true') {
+          postPartialContent(partialContent)
         }
 
         if (process.env.DRY_RUN !== 'true') {
@@ -121,7 +121,7 @@ function buildIssueBody(withQuote) {
   let extractedIssueBody = []
   if (!process.env.ISSUE_BODY) return issueBody; // asi
 
-  [issueBody, extractedIssueBody] = trimPrivateContent(process.env.ISSUE_BODY)
+  [issueBody, extractedIssueBody] = trimPartialContent(process.env.ISSUE_BODY)
   if (withQuote) issueBody = encompassWithQuote(issueBody)
   issueBody += newline
   if (process.env.WITH_DATE) issueBody += `${newline}> ${formattedDateTime(process.env.ISSUE_CREATED_AT)}${newline}`
@@ -137,7 +137,7 @@ function buildContent(comments, issueBody, withQuote) {
   let isFirstComment = true
 
   comments.forEach((comment) => {
-    [sanitizedCommentBody, extractedCommentBody] = trimPrivateContent(comment.body)
+    [sanitizedCommentBody, extractedCommentBody] = trimPartialContent(comment.body)
     extractedCommentBodies = extractedCommentBodies.concat(extractedCommentBody)
 
     if (!isFirstComment || issueBody) {
@@ -157,7 +157,7 @@ function buildContent(comments, issueBody, withQuote) {
   return [content, extractedCommentBodies]
 }
 
-function trimPrivateContent(commentBody) {
+function trimPartialContent(commentBody) {
   if (process.env.PARTIAL_START_STRING === '' || process.env.PARTIAL_END_STRING === '') return [commentBody, []]
 
   const partialStringRegExp = new RegExp(
@@ -174,38 +174,38 @@ function trimPrivateContent(commentBody) {
   return [sanitizedCommentBody, extractedCommentBody]
 }
 
-function buildPrivateContent(privateDataJson) {
-  if (!privateDataJson.length) return ''
+function buildPartialContent(partialDataJson) {
+  if (!partialDataJson.length) return ''
 
   if (process.env.PARTIAL_START_STRING === '' || process.env.PARTIAL_END_STRING === '') {
-    console.error('private data json exists even though PARTIAL_START_STRING or PARTIAL_END_STRING does not exist')
+    console.error('partial data json exists even though PARTIAL_START_STRING or PARTIAL_END_STRING does not exist')
     process.exit(1)
   }
 
   const partialStartStringRegExp = new RegExp('^' + process.env.PARTIAL_START_STRING, '')
   const partialEndStringRegExp = new RegExp(process.env.PARTIAL_END_STRING + '$', '')
 
-  let privateContent = `| Reference | Content |${newline}| :---: | --- |`
+  let partialContent = `| Reference | Content |${newline}| :---: | --- |`
 
-  privateDataJson.forEach((json) => {
-    privateContent +=
+  partialDataJson.forEach((json) => {
+    partialContent +=
       `${newline}| \`${json.hash}\` | ${json.body
       .replace(partialStartStringRegExp, '')
       .replace(partialEndStringRegExp, '')
       .replace(/(\r\n|\r|\n)/g, '<br>')} |`
   })
 
-  privateContent += newline
+  partialContent += newline
 
-  privateDataJson.forEach((json) => {
-    privateContent +=
+  partialDataJson.forEach((json) => {
+    partialContent +=
       `${newline}${json.hash}: ${json.body
       .replace(partialStartStringRegExp, '')
       .replace(partialEndStringRegExp, '')
       .replace(/(\r\n|\r|\n)/g, '<br>')}`
   })
 
-  return privateContent
+  return partialContent
 }
 
 async function commit(issueBody, content) {
@@ -338,20 +338,20 @@ function post(issueBody, content) {
 }
 
 // TODO: Consider refactoring because most of the codes is similar to post()
-function postPrivate(privateContent) {
-  if (!privateContent) return false
+function postPartialContent(partialContent) {
+  if (!partialContent) return false
 
-  let targetIssueRepo = process.env.PRIVATE_TARGET_ISSUE_REPO
+  let targetIssueRepo = process.env.PARTIAL_CONTENT_TARGET_ISSUE_REPO
   if (!targetIssueRepo) {
     // This is a safe condition.
-    // Publishing the private content somewhere implicitly without the user's recognition is so dangerous!
+    // Publishing the partial content somewhere implicitly without the user's recognition is so dangerous!
     console.error('target issue repo is empty')
     process.exit(1)
   }
 
   let targetIssueNumber = ''
-  if (process.env.PRIVATE_TARGET_ISSUE_NUMBER && process.env.PRIVATE_TARGET_ISSUE_NUMBER !== 'latest') {
-    targetIssueNumber = process.env.PRIVATE_TARGET_ISSUE_NUMBER
+  if (process.env.PARTIAL_CONTENT_TARGET_ISSUE_NUMBER && process.env.PARTIAL_CONTENT_TARGET_ISSUE_NUMBER !== 'latest') {
+    targetIssueNumber = process.env.PARTIAL_CONTENT_TARGET_ISSUE_NUMBER
   }
   else {
     targetIssueNumber = execSync(`gh issue list --repo "${targetIssueRepo}" --limit 1 | awk '{ print $1 }'`).toString().trim()
@@ -363,7 +363,7 @@ function postPrivate(privateContent) {
     title = `## ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
 
-  fs.writeFileSync(tmpFile, `${title}${privateContent}`)
+  fs.writeFileSync(tmpFile, `${title}${partialContent}`)
   execSync(`gh issue comment --repo "${targetIssueRepo}" "${targetIssueNumber}" --body-file "${tmpFile}"`)
   fs.unlinkSync(tmpFile)
 }
@@ -474,7 +474,7 @@ function buildFilepath() {
 }
 
 // If you post both in 'file' and 'issue' mode, comments will be duplicated. This function is called to avoid that.
-function getWhichModeToPostPrivateIn(modes, skipBody) {
+function getWhichModeToPostPartialContentIn(modes, skipBody) {
   if (modes.includes('file') && !modes.includes('issue')) {
     return 'file'
   }

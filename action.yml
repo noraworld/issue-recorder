@@ -50,11 +50,11 @@ inputs:
     description: Select an issue number
     required: false
     default: ""
-  private_target_issue_repo:
+  partial_content_target_issue_repo:
     description: Select a repository with a username whose issue you want to transfer
     required: false
     default: ""
-  private_target_issue_number:
+  partial_content_target_issue_number:
     description: Select an issue number
     required: false
     default: ""
@@ -154,8 +154,8 @@ runs:
         TITLE_PREFIX_FOR_FILE: ${{ inputs.title_prefix_for_file }}
         TARGET_ISSUE_REPO: ${{ inputs.target_issue_repo }}
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
-        PRIVATE_TARGET_ISSUE_REPO: ${{ inputs.private_target_issue_repo }}
-        PRIVATE_TARGET_ISSUE_NUMBER: ${{ inputs.private_target_issue_number }}
+        PARTIAL_CONTENT_TARGET_ISSUE_REPO: ${{ inputs.partial_content_target_issue_repo }}
+        PARTIAL_CONTENT_TARGET_ISSUE_NUMBER: ${{ inputs.partial_content_target_issue_number }}
         PARTIAL_START_STRING: ${{ inputs.partial_start_string }}
         PARTIAL_END_STRING: ${{ inputs.partial_end_string }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
