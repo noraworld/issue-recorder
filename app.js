@@ -44,8 +44,17 @@ async function run() {
         privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
         privateContent = buildPrivateContent(privateDataJson)
 
-        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'file') postPrivate(privateContent)
-        await commit(issueBody, content)
+        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'file' && process.env.DRY_RUN !== 'true') {
+          postPrivate(privateContent)
+        }
+
+        if (process.env.DRY_RUN !== 'true') {
+          await commit(issueBody, content)
+        }
+        else {
+          console.log(issueBody)
+          console.log(content)
+        }
 
         break
       case 'issue':
@@ -56,8 +65,17 @@ async function run() {
         privateDataJson = extractedIssueBody.concat(extractedCommentBodies)
         privateContent = buildPrivateContent(privateDataJson)
 
-        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'issue') postPrivate(privateContent)
-        post(issueBody, content)
+        if (getWhichModeToPostPrivateIn(modes, skipBody) === 'issue' && process.env.DRY_RUN !== 'true') {
+          postPrivate(privateContent)
+        }
+
+        if (process.env.DRY_RUN !== 'true') {
+          post(issueBody, content)
+        }
+        else {
+          console.log(issueBody)
+          console.log(content)
+        }
 
         break
       default:
