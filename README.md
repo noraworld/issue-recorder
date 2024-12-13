@@ -132,7 +132,7 @@ As for the original content between `partial_content_start_string` and `partial_
 [^pvt_1234567]: Tevin
 ```
 
-**NOTE**: You can use the regular expression. In other words, if you want to use characters treated in the regular expression as those characters, you need to sanitize them.
+**NOTE**: You can use the regular expression in `partial_content_start_string` and `partial_content_end_string`. In other words, if you want to use characters treated in the regular expression as those characters, you need to sanitize them. You don't have to escape `/`.
 
 #### Special identifier for `notification_comment`
 You can use the following special identifiers for `notification_comment`.
