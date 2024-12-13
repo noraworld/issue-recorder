@@ -140,9 +140,14 @@ function buildContent(comments, issueBody, withQuote) {
 }
 
 function trimPrivateContent(commentBody) {
+  if (process.env.PARTIAL_START_STRING === '' || process.env.PARTIAL_END_STRING === '') return [commentBody, []]
+
+  const partialStringRegExp = new RegExp(
+    '(' + process.env.PARTIAL_START_STRING + '.*?' + process.env.PARTIAL_END_STRING + ')', 'gs'
+  )
   let extractedCommentBody = []
 
-  const sanitizedCommentBody = commentBody.replace(/(<private>.*?<\/private>)/gs, (_, match) => {
+  const sanitizedCommentBody = commentBody.replace(partialStringRegExp, (_, match) => {
     let hash = `[^pvt_${generateHash(match, fixedSalt)}]`
     extractedCommentBody.push({ hash: hash, body: match })
     return hash
@@ -154,13 +159,21 @@ function trimPrivateContent(commentBody) {
 function buildPrivateContent(privateDataJson) {
   if (!privateDataJson.length) return ''
 
+  if (process.env.PARTIAL_START_STRING === '' || process.env.PARTIAL_END_STRING === '') {
+    console.error('private data json exists even though PARTIAL_START_STRING or PARTIAL_END_STRING does not exist')
+    process.exit(1)
+  }
+
+  const partialStartStringRegExp = new RegExp('^' + process.env.PARTIAL_START_STRING, '')
+  const partialEndStringRegExp = new RegExp(process.env.PARTIAL_END_STRING + '$', '')
+
   let privateContent = `| Reference | Content |${newline}| :---: | --- |`
 
   privateDataJson.forEach((json) => {
     privateContent +=
       `${newline}| \`${json.hash}\` | ${json.body
-      .replace(/^<private>/, '')
-      .replace(/<\/private>$/, '')
+      .replace(partialStartStringRegExp, '')
+      .replace(partialEndStringRegExp, '')
       .replace(/(\r\n|\r|\n)/g, '<br>')} |`
   })
 
@@ -169,8 +182,8 @@ function buildPrivateContent(privateDataJson) {
   privateDataJson.forEach((json) => {
     privateContent +=
       `${newline}${json.hash}: ${json.body
-      .replace(/^<private>/, '')
-      .replace(/<\/private>$/, '')
+      .replace(partialStartStringRegExp, '')
+      .replace(partialEndStringRegExp, '')
       .replace(/(\r\n|\r|\n)/g, '<br>')}`
   })
 

@@ -58,6 +58,14 @@ inputs:
     description: Select an issue number
     required: false
     default: ""
+  partial_start_string:
+    description: partial start string
+    required: false
+    default: ""
+  partial_end_string:
+    description: partial end string
+    required: false
+    default: ""
   fold_threshold:
     description: Specify the threshold to fold
     required: false
@@ -148,6 +156,8 @@ runs:
         TARGET_ISSUE_NUMBER: ${{ inputs.target_issue_number }}
         PRIVATE_TARGET_ISSUE_REPO: ${{ inputs.private_target_issue_repo }}
         PRIVATE_TARGET_ISSUE_NUMBER: ${{ inputs.private_target_issue_number }}
+        PARTIAL_START_STRING: ${{ inputs.partial_start_string }}
+        PARTIAL_END_STRING: ${{ inputs.partial_end_string }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
         TITLE_PREFIX_FOR_ISSUE: ${{ inputs.title_prefix_for_issue }}
