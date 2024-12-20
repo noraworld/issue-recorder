@@ -521,10 +521,21 @@ function getWhichModeToPostPartialContentIn(modes, skipBody) {
 }
 
 function committable(issueBody, content) {
+  if (process.env.SKIP_IF_EMPTY_INCLUDING_BODY !== '' && process.env.SKIP_IF_EMPTY_NOT_INCLUDING_BODY !== '') {
+    console.error('specifying both SKIP_IF_EMPTY_INCLUDING_BODY and SKIP_IF_EMPTY_NOT_INCLUDING_BODY is prohibited.')
+    process.exit(1)
+  }
+
   if (
-    process.env.SKIP_IF_EMPTY.split(',').map((element) => element.trim()).includes('file') &&
-    issueBody === ''                                                                       &&
+    process.env.SKIP_IF_EMPTY_INCLUDING_BODY.split(',').map((element) => element.trim()).includes('file') &&
+    issueBody === ''                                                                                      &&
     content   === ''
+  ) {
+    return false
+  }
+  else if (
+    process.env.SKIP_IF_EMPTY_NOT_INCLUDING_BODY.split(',').map((element) => element.trim()).includes('file') &&
+    content === ''
   ) {
     return false
   }
@@ -534,10 +545,21 @@ function committable(issueBody, content) {
 }
 
 function postable(issueBody, content) {
+  if (process.env.SKIP_IF_EMPTY_INCLUDING_BODY !== '' && process.env.SKIP_IF_EMPTY_NOT_INCLUDING_BODY !== '') {
+    console.error('specifying both SKIP_IF_EMPTY_INCLUDING_BODY and SKIP_IF_EMPTY_NOT_INCLUDING_BODY is prohibited.')
+    process.exit(1)
+  }
+
   if (
-    process.env.SKIP_IF_EMPTY.split(',').map((element) => element.trim()).includes('issue') &&
-    issueBody === ''                                                                        &&
+    process.env.SKIP_IF_EMPTY_INCLUDING_BODY.split(',').map((element) => element.trim()).includes('issue') &&
+    issueBody === ''                                                                                       &&
     content   === ''
+  ) {
+    return false
+  }
+  else if (
+    process.env.SKIP_IF_EMPTY_NOT_INCLUDING_BODY.split(',').map((element) => element.trim()).includes('issue') &&
+    content === ''
   ) {
     return false
   }
