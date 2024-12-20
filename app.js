@@ -52,8 +52,10 @@ async function run() {
           await commit(issueBody, content)
         }
         else {
-          console.log(issueBody)
-          console.log(content)
+          console.info('===== issueBody (mode = file) ======')
+          console.info(issueBody)
+          console.info('====== content (mode = file) =======')
+          console.info(content)
         }
 
         break
@@ -73,8 +75,11 @@ async function run() {
           post(issueBody, content)
         }
         else {
-          console.log(issueBody)
-          console.log(content)
+          console.info('===== issueBody (mode = issue) =====')
+          console.info(issueBody)
+          console.info('====== content (mode = issue) ======')
+          console.info(content)
+          console.info('====================================')
         }
 
         break
