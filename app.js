@@ -49,7 +49,7 @@ async function run() {
         }
 
         if (process.env.DRY_RUN !== 'true') {
-          await commit(issueBody, content)
+          if (committable(issueBody, content)) await commit(issueBody, content)
         }
         else {
           console.info('===== issueBody (mode = file) ======')
@@ -72,7 +72,7 @@ async function run() {
         }
 
         if (process.env.DRY_RUN !== 'true') {
-          post(issueBody, content)
+          if (postable(issueBody, content)) post(issueBody, content)
         }
         else {
           console.info('===== issueBody (mode = issue) =====')
@@ -501,6 +501,32 @@ function getWhichModeToPostPartialContentIn(modes, skipBody) {
   else {
     console.error('unexpected pattern has been detected.')
     process.exit(1)
+  }
+}
+
+function committable(issueBody, content) {
+  if (
+    process.env.SKIP_IF_EMPTY.split(',').map((element) => element.trim()).includes('file') &&
+    issueBody === ''                                                                       &&
+    content   === ''
+  ) {
+    return false
+  }
+  else {
+    return true
+  }
+}
+
+function postable(issueBody, content) {
+  if (
+    process.env.SKIP_IF_EMPTY.split(',').map((element) => element.trim()).includes('issue') &&
+    issueBody === ''                                                                        &&
+    content   === ''
+  ) {
+    return false
+  }
+  else {
+    return true
   }
 }
 
