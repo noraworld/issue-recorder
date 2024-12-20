@@ -114,6 +114,10 @@ inputs:
     description: Whether to skip saving to a file or leaving a comment on another repository if the content is empty
     required: false
     default: ""
+  fail_if_skip:
+    description: Notify by raising an error when saving to a file or leaving a comment on another repository is skipped
+    required: false
+    default: ""
   personal_access_token:
     description: Specify your personal access token name stored in your repository
     required: false
@@ -174,4 +178,5 @@ runs:
         WITH_QUOTE: ${{ inputs.with_quote }}
         SKIP_BODY: ${{ inputs.skip_body }}
         SKIP_IF_EMPTY: ${{ inputs.skip_if_empty }}
+        FAIL_IF_SKIP: ${{ inputs.fail_if_skip }}
         PERSONAL_ACCESS_TOKEN: ${{ inputs.personal_access_token }}

@@ -23,6 +23,7 @@ const fixedSalt = bcrypt.genSaltSync(randomInt(10, 14))
 async function run() {
   let modes = process.env.MODE.split(',').map((element) => element.trim())
   let skipBody = process.env.SKIP_BODY.split(',').map((element) => element.trim())
+  let skipped = false
 
   let comments
   let withQuote
@@ -49,7 +50,12 @@ async function run() {
         }
 
         if (process.env.DRY_RUN !== 'true') {
-          if (committable(issueBody, content)) await commit(issueBody, content)
+          if (committable(issueBody, content)) {
+            await commit(issueBody, content)
+          }
+          else {
+            skipped = true
+          }
         }
         else {
           console.info('===== issueBody (mode = file) ======')
@@ -72,7 +78,12 @@ async function run() {
         }
 
         if (process.env.DRY_RUN !== 'true') {
-          if (postable(issueBody, content)) post(issueBody, content)
+          if (postable(issueBody, content)) {
+            post(issueBody, content)
+          }
+          else {
+            skipped = true
+          }
         }
         else {
           console.info('===== issueBody (mode = issue) =====')
@@ -89,6 +100,11 @@ async function run() {
 
         break
     }
+  }
+
+  if (process.env.FAIL_IF_SKIP === 'true' && skipped) {
+    console.error('saving or leaving a comment was skipped')
+    process.exit(1)
   }
 }
 
