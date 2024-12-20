@@ -162,9 +162,10 @@ You can use the following special identifiers for `with_header`.
 | `<CREATED_AT>` | Date and time when an issue is created    | `String`                                     | `8:02 AM · Mar 29, 2024 (GMT+9)` |
 
 ## Development
-You can use `.env` to load the environment variables that are needed in this project and can call it with the `--env-file=.env` option.
+You can use `.env` to load the environment variables that are needed in this project and can call it with the `--env-file=.env` option. It is highly recommended to use `DRY_RUN="true"` to avoid committing or leaving test data during development.
 
 ```shell
+cp .env.sample .env
 node --env-file=.env app.js
 ```
 
