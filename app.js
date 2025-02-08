@@ -3,6 +3,7 @@
 const { Base64 }   = require('js-base64')
 const bcrypt       = require('bcrypt')
 const Buffer       = require('buffer').Buffer
+const crypto       = require('crypto')
 const { DateTime } = require('luxon')
 const { execSync } = require('child_process')
 const fs           = require('fs')
@@ -28,6 +29,7 @@ async function run() {
   let comments
   let withQuote
   let issueBody
+  let contentWithoutAttachedFiles
   let content
   let extractedIssueBody
   let extractedCommentBodies
@@ -42,6 +44,8 @@ async function run() {
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? ['', []] : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        // [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        // content = await replaceAttachedFiles(contentWithoutAttachedFiles)
         partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
         partialContent = buildPartialContent(partialDataJson)
 
@@ -70,6 +74,8 @@ async function run() {
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? ['', []] : buildIssueBody(withQuote); // asi
         [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        // [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        // content = await replaceAttachedFiles(contentWithoutAttachedFiles)
         partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
         partialContent = buildPartialContent(partialDataJson)
 
@@ -227,6 +233,81 @@ function buildPartialContent(partialDataJson) {
   })
 
   return partialContent
+}
+
+// https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
+async function replaceAttachedFiles(contentWithoutAttachedFiles) {
+  const regex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g
+  let matches
+  const replacements = []
+  const cache = new Map()
+
+  while ((matches = regex.exec(contentWithoutAttachedFiles)) !== null) {
+      const original = matches[0]
+      const url = matches[1]
+
+      // to avoid downloading the same URL
+      if (!cache.has(url)) {
+        cache.set(url, downloadImage(url))
+      }
+
+      replacements.push({ original, url, newUrl: cache.get(url) })
+  }
+
+  const resolvedReplacements = await Promise.all(
+    [...cache.entries()].map(async ([url, promise]) => [url, await promise])
+  )
+
+  for (const [url, newUrl] of resolvedReplacements) {
+    cache.set(url, newUrl)
+  }
+
+  for (const { original, url } of replacements) {
+    contentWithoutAttachedFiles = contentWithoutAttachedFiles.replace(url, cache.get(url))
+  }
+
+  return contentWithoutAttachedFiles
+}
+
+// https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
+async function detectFileType(buffer) {
+  const { fileTypeFromBuffer } = await import('file-type')
+  return fileTypeFromBuffer(buffer)
+}
+
+// https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
+async function downloadImage(url) {
+  let headers = null
+  const token = process.env.PERSONAL_ACCESS_TOKEN ?
+                process.env[process.env.PERSONAL_ACCESS_TOKEN] :
+                process.env.GITHUB_TOKEN
+
+  // to avoid exposing the GitHub token to somewhere else
+  if (url.startsWith('https://github.com')) {
+    headers = {
+      'Authorization': `Bearer ${token}`,
+      'User-Agent': 'Node.js'
+    }
+  }
+  else {
+    headers = {
+      'User-Agent': 'Node.js'
+    }
+  }
+
+  const response = await fetch(url, { headers: headers })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch attached file: ${response.statusText}`)
+  }
+
+  const buffer = await response.arrayBuffer()
+  const fileType = await detectFileType(buffer)
+  const extension = fileType ? fileType.ext : 'bin'
+  const filename = `${generateHexRandom()}.${extension}`
+  fs.writeFileSync(filename, Buffer.from(buffer))
+
+  return filename
 }
 
 async function commit(issueBody, content) {
@@ -624,6 +705,11 @@ function generateHash(string, salt) {
   const hashWithSalt = bcrypt.hashSync(string, salt)
   const hash = hashWithSalt.split('$')[3].slice(22)
   return Buffer.from(hash, 'base64').toString('hex').slice(0, 7)
+}
+
+// https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
+function generateHexRandom(bytes = 16) {
+  return crypto.randomBytes(bytes).toString('hex')
 }
 
 function randomInt(min, max) {
