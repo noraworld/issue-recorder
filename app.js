@@ -243,15 +243,15 @@ async function replaceAttachedFiles(contentWithoutAttachedFiles) {
   const cache = new Map()
 
   while ((matches = regex.exec(contentWithoutAttachedFiles)) !== null) {
-      const original = matches[0]
-      const url = matches[1]
+    const original = matches[0]
+    const url = matches[1]
 
-      // to avoid downloading the same URL
-      if (!cache.has(url)) {
-        cache.set(url, downloadImage(url))
-      }
+    // to avoid downloading the same URL
+    if (!cache.has(url)) {
+      cache.set(url, downloadImage(url))
+    }
 
-      replacements.push({ original, url, newUrl: cache.get(url) })
+    replacements.push({ original, url, newUrl: cache.get(url) })
   }
 
   const resolvedReplacements = await Promise.all(
