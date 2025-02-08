@@ -25,6 +25,7 @@ const cache = new Map()
 async function run() {
   let modes = process.env.MODE.split(',').map((element) => element.trim())
   let skipBody = process.env.SKIP_BODY.split(',').map((element) => element.trim())
+  let with_repo_assets = process.env.WITH_REPO_ASSETS.split(',').map((element) => element.trim())
   let skipped = false
 
   let comments
@@ -44,9 +45,13 @@ async function run() {
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? ['', []] : buildIssueBody(withQuote); // asi
-        [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
-        // [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
-        // content = await replaceAttachedFiles(contentWithoutAttachedFiles)
+        if (with_repo_assets.includes('file')) {
+          [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote);
+          content = await replaceAttachedFiles(contentWithoutAttachedFiles)
+        }
+        else {
+          [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        }
         partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
         partialContent = buildPartialContent(partialDataJson)
 
@@ -74,9 +79,13 @@ async function run() {
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? ['', []] : buildIssueBody(withQuote); // asi
-        [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
-        // [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
-        // content = await replaceAttachedFiles(contentWithoutAttachedFiles)
+        if (with_repo_assets.includes('issue')) {
+          [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote);
+          content = await replaceAttachedFiles(contentWithoutAttachedFiles)
+        }
+        else {
+          [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+        }
         partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
         partialContent = buildPartialContent(partialDataJson)
 
@@ -323,7 +332,7 @@ async function downloadImage(url) {
   if (file) {
     return assetsURL
   }
-  else if (process.env.DRY_RUN === 'true') {
+  else if (process.env.DRY_RUN !== 'true') {
     // sha is unnecessary (null is set) because the attached files are always published as a new file
     await push(process.env.ASSETS_REPO, Buffer.from(buffer), `Add ${filepath}`, filepath, null)
 

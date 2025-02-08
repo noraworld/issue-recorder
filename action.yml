@@ -66,6 +66,10 @@ inputs:
     description: partial end string
     required: false
     default: ""
+  with_repo_assets:
+    description: with repo assets
+    required: false
+    default: ""
   assets_repo:
     description: assets repo
     required: false
@@ -178,6 +182,7 @@ runs:
         PARTIAL_CONTENT_TARGET_ISSUE_NUMBER: ${{ inputs.partial_content_target_issue_number }}
         PARTIAL_CONTENT_START_STRING: ${{ inputs.partial_content_start_string }}
         PARTIAL_CONTENT_END_STRING: ${{ inputs.partial_content_end_string }}
+        WITH_REPO_ASSETS: ${{ inputs.with_repo_assets }}
         ASSETS_REPO: ${{ inputs.assets_repo }}
         ASSETS_DIRECTORY: ${{ inputs.assets_directory }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
