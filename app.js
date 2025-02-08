@@ -16,6 +16,7 @@ const newline = '\r\n'
 const tmpFile = 'tmp.md'
 const pushRetryMaximum = 10
 const fixedSalt = bcrypt.genSaltSync(randomInt(10, 14))
+const cache = new Map()
 
 // Semicolons are sometimes necessary.
 //   If you omit them, the following error will cause or an unexpected result will be received because the ASI fails.
@@ -240,7 +241,6 @@ async function replaceAttachedFiles(contentWithoutAttachedFiles) {
   const regex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g
   let matches
   const replacements = []
-  const cache = new Map()
 
   while ((matches = regex.exec(contentWithoutAttachedFiles)) !== null) {
     const original = matches[0]
@@ -277,6 +277,16 @@ async function detectFileType(buffer) {
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
 async function downloadImage(url) {
+  if (!process.env.ASSETS_REPO) {
+    console.error('The assets repository was not set.')
+    process.exit(1)
+  }
+
+  if (!process.env.ASSETS_DIRECTORY) {
+    console.error('The assets directory was not set.')
+    process.exit(1)
+  }
+
   let headers = null
   const token = process.env.PERSONAL_ACCESS_TOKEN ?
                 process.env[process.env.PERSONAL_ACCESS_TOKEN] :
@@ -304,21 +314,40 @@ async function downloadImage(url) {
   const buffer = await response.arrayBuffer()
   const fileType = await detectFileType(buffer)
   const extension = fileType ? fileType.ext : 'bin'
-  const filename = `${generateHexRandom()}.${extension}`
-  fs.writeFileSync(filename, Buffer.from(buffer))
+  const filename = `${generateFileHash(url)}.${extension}`
+  const filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
+  const [ owner, repo ] = process.env.ASSETS_REPO.split('/')
+  const assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
+  const file = await getFileFromRepo(process.env.ASSETS_REPO, filepath)
 
-  return filename
+  if (file) {
+    return assetsURL
+  }
+  else if (process.env.DRY_RUN === 'true') {
+    // sha is unnecessary (null is set) because the attached files are always published as a new file
+    await push(process.env.ASSETS_REPO, Buffer.from(buffer), `Add ${filepath}`, filepath, null)
+
+    return assetsURL
+  }
+  else {
+    const dir = path.dirname(filepath)
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+    fs.writeFileSync(filepath, Buffer.from(buffer))
+
+    return `./${filepath}`
+  }
 }
 
 async function commit(issueBody, content) {
   // Node.js Stream doesn't work if a filename contains back quotes, even if they are sanitized correctly.
   // Even if it were to work properly, back quotes shouldn't be used for a filename.
   const filepath = buildFilepath()
+  const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
 
   let existingContent = ''
   let sha = null
   let commitMessage = ''
-  let file = await getFileFromRepo(filepath)
+  let file = await getFileFromRepo(targetFileRepo, filepath)
   if (file) {
     if (!process.env.OVERWRITE_WHEN_MODIFIED) {
       // FIXME: Use the content of variable "file" instead of readFileSync()
@@ -375,9 +404,8 @@ async function commit(issueBody, content) {
 
   const renderedContent = normalizeNewlines(`${header}${existingContent}${title}${issueBody}${content}`)
 
-  const commitResult = await push(renderedContent, commitMessage, filepath, sha)
+  const commitResult = await push(targetFileRepo, renderedContent, commitMessage, filepath, sha)
 
-  const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
   if (process.env.NOTIFICATION_COMMENT) {
     // https://docs.github.com/en/actions/learn-github-actions/variables
     let notification_comment =
@@ -470,12 +498,11 @@ function postPartialContent(partialContent) {
   fs.unlinkSync(tmpFile)
 }
 
-async function getFileFromRepo(path) {
+async function getFileFromRepo(repoWithUsername, path) {
   const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
                   new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
                   new Octokit({ auth: process.env.GITHUB_TOKEN })
-  const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
-  const [ owner, repo ] = targetFileRepo.split('/')
+  const [ owner, repo ] = repoWithUsername.split('/')
 
   try {
     const response = await octokit.repos.getContent({
@@ -500,12 +527,21 @@ async function getFileFromRepo(path) {
 }
 
 // https://blog.dennisokeeffe.com/blog/2020-06-22-using-octokit-to-create-files
-async function push(content, commitMessage, filepath, sha) {
+async function push(repoWithUsername, content, commitMessage, filepath, sha) {
+  if (!process.env.COMMITTER_NAME) {
+    console.error('The committer name was not supplied.')
+    process.exit(1)
+  }
+
+  if (!process.env.COMMITTER_EMAIL) {
+    console.error('The committer email was not supplied.')
+    process.exit(1)
+  }
+
   const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
                   new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
                   new Octokit({ auth: process.env.GITHUB_TOKEN })
-  const targetFileRepo = process.env.TARGET_FILE_REPO ? process.env.TARGET_FILE_REPO : process.env.GITHUB_REPOSITORY
-  const [ owner, repo ] = targetFileRepo.split('/')
+  const [ owner, repo ] = repoWithUsername.split('/')
 
   for (let i = 1; i <= pushRetryMaximum; i++) {
     try {
@@ -709,8 +745,8 @@ function generateSecureHash(string, salt) {
 }
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
-function generateHexRandom(bytes = 16) {
-  return crypto.randomBytes(bytes).toString('hex')
+function generateFileHash(url) {
+  return crypto.createHash('sha256').update(url, 'utf8').digest('hex')
 }
 
 function randomInt(min, max) {

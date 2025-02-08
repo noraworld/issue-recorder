@@ -66,6 +66,14 @@ inputs:
     description: partial end string
     required: false
     default: ""
+  assets_repo:
+    description: assets repo
+    required: false
+    default: ""
+  assets_directory:
+    description: assets directory
+    required: false
+    default: ""
   fold_threshold:
     description: Specify the threshold to fold
     required: false
@@ -170,6 +178,8 @@ runs:
         PARTIAL_CONTENT_TARGET_ISSUE_NUMBER: ${{ inputs.partial_content_target_issue_number }}
         PARTIAL_CONTENT_START_STRING: ${{ inputs.partial_content_start_string }}
         PARTIAL_CONTENT_END_STRING: ${{ inputs.partial_content_end_string }}
+        ASSETS_REPO: ${{ inputs.assets_repo }}
+        ASSETS_DIRECTORY: ${{ inputs.assets_directory }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
         TITLE_PREFIX_FOR_ISSUE: ${{ inputs.title_prefix_for_issue }}
