@@ -382,6 +382,26 @@ async function compressImage(buffer) {
     process.exit(1)
   }
 
+  if (process.env.RESIZE_WIDTH && process.env.RESIZE_HEIGHT) {
+    buffer = await sharp(buffer).resize({
+      width: Number(process.env.RESIZE_WIDTH),
+      height: Number(process.env.RESIZE_HEIGHT),
+      fit: 'inside'
+    }).toBuffer()
+  }
+  else if (process.env.RESIZE_WIDTH) {
+    buffer = await sharp(buffer).resize({
+      width: Number(process.env.RESIZE_WIDTH),
+      fit: 'inside'
+    }).toBuffer()
+  }
+  else if (process.env.RESIZE_HEIGHT) {
+    buffer = await sharp(buffer).resize({
+      height: Number(process.env.RESIZE_HEIGHT),
+      fit: 'inside'
+    }).toBuffer()
+  }
+
   const metadata = await sharp(buffer).metadata()
   const format = metadata.format
   const step = 5

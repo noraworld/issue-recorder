@@ -86,6 +86,14 @@ inputs:
     description: compression threshold
     required: false
     default: ""
+  resize_width:
+    description: resize width
+    required: false
+    default: ""
+  resize_height:
+    description: resize height
+    required: false
+    default: ""
   fold_threshold:
     description: Specify the threshold to fold
     required: false
@@ -195,6 +203,8 @@ runs:
         ASSETS_DIRECTORY: ${{ inputs.assets_directory }}
         WITH_ASSETS_COMPRESSION: ${{ inputs.with_assets_compression }}
         COMPRESSION_THRESHOLD: ${{ inputs.compression_threshold }}
+        RESIZE_WIDTH: $ {{ inputs.resize_width }}
+        RESIZE_HEIGHT: $ {{ inputs.resize_height }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
         TITLE_PREFIX_FOR_ISSUE: ${{ inputs.title_prefix_for_issue }}
