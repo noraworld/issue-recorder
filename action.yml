@@ -78,6 +78,14 @@ inputs:
     description: assets directory
     required: false
     default: ""
+  with_assets_compression:
+    description: with assets compression
+    required: false
+    default: ""
+  compression_threshold:
+    description: compression threshold
+    required: false
+    default: ""
   fold_threshold:
     description: Specify the threshold to fold
     required: false
@@ -185,6 +193,8 @@ runs:
         WITH_REPO_ASSETS: ${{ inputs.with_repo_assets }}
         ASSETS_REPO: ${{ inputs.assets_repo }}
         ASSETS_DIRECTORY: ${{ inputs.assets_directory }}
+        WITH_ASSETS_COMPRESSION: ${{ inputs.with_assets_compression }}
+        COMPRESSION_THRESHOLD: ${{ inputs.compression_threshold }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
         TITLE_PREFIX_FOR_ISSUE: ${{ inputs.title_prefix_for_issue }}

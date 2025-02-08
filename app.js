@@ -9,6 +9,7 @@ const { execSync } = require('child_process')
 const fs           = require('fs')
 const { Octokit }  = require('@octokit/rest')
 const path         = require('path')
+const sharp        = require('sharp')
 
 // When "\n" is used, GitHub will warn you of the following:
 // We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
@@ -332,19 +333,86 @@ async function downloadAndUploadAttachedFile(url) {
   if (file) {
     return assetsURL
   }
-  else if (process.env.DRY_RUN !== 'true') {
+
+  // "compressedBuffer" will be the same as "buffer" if "WITH_ASSETS_COMPRESSION" is not specified
+  const compressedBuffer = await compressFile(Buffer.from(buffer), extension)
+
+  if (process.env.DRY_RUN !== 'true') {
     // sha is unnecessary (null is set) because the attached files are always published as a new file
-    await push(process.env.ASSETS_REPO, Buffer.from(buffer), `Add ${filepath}`, filepath, null)
+    await push(process.env.ASSETS_REPO, compressedBuffer, `Add ${filepath}`, filepath, null)
 
     return assetsURL
   }
   else {
     const dir = path.dirname(filepath)
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-    fs.writeFileSync(filepath, Buffer.from(buffer))
+    fs.writeFileSync(filepath, compressedBuffer)
 
     return `./${filepath}`
   }
+}
+
+// https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
+async function compressFile(buffer, extension) {
+  if (process.env.WITH_ASSETS_COMPRESSION !== "true") {
+    return buffer
+  }
+
+  let compressedBuffer
+
+  switch (extension) {
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'webp':
+      compressedBuffer = await compressImage(buffer)
+      break
+    default:
+      // TODO: support other file types in the future
+      break
+  }
+
+  return compressedBuffer
+}
+
+// https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
+async function compressImage(buffer) {
+  if (!process.env.COMPRESSION_THRESHOLD) {
+    console.error('COMPRESSION_THRESHOLD is required if you want to compress the image files.')
+    process.exit(1)
+  }
+
+  const metadata = await sharp(buffer).metadata()
+  const format = metadata.format
+  const step = 5
+
+  let compressedBuffer = buffer
+  let quality = 95
+  let compressionLevel = 0
+
+  switch (format) {
+    case 'jpeg':
+    case 'webp':
+      while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && quality >= 10) {
+        let options = {}
+        options.quality = quality
+        compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
+        quality -= step
+      }
+      break
+    case 'png':
+      while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && compressionLevel <= 9) {
+        let options = {}
+        options.compressionLevel = compressionLevel
+        compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
+        compressionLevel++
+      }
+      break
+    default:
+      break
+  }
+
+  return compressedBuffer
 }
 
 async function commit(issueBody, content) {
