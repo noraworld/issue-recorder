@@ -257,7 +257,7 @@ async function replaceAttachedFiles(contentWithoutAttachedFiles) {
 
     // to avoid downloading the same URL
     if (!cache.has(url)) {
-      cache.set(url, downloadImage(url))
+      cache.set(url, downloadAndUploadAttachedFile(url))
     }
 
     replacements.push({ original, url, newUrl: cache.get(url) })
@@ -285,7 +285,7 @@ async function detectFileType(buffer) {
 }
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
-async function downloadImage(url) {
+async function downloadAndUploadAttachedFile(url) {
   if (!process.env.ASSETS_REPO) {
     console.error('The assets repository was not set.')
     process.exit(1)
