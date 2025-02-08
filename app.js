@@ -193,7 +193,7 @@ function trimPartialContent(commentBody) {
   let extractedCommentBody = []
 
   const sanitizedCommentBody = commentBody.replace(partialStringRegExp, (_, match) => {
-    let hash = `[^pvt_${generateHash(match, fixedSalt)}]`
+    let hash = `[^pvt_${generateSecureHash(match, fixedSalt)}]`
     extractedCommentBody.push({ hash: hash, body: match })
     return hash
   })
@@ -696,7 +696,8 @@ function sanitizeShellSpecialCharacters(str) {
     .replaceAll(/"/g, '\\"')
 }
 
-function generateHash(string, salt) {
+// it takes some time to process, so it's good to avoid using this except for the security purpose
+function generateSecureHash(string, salt) {
   if (typeof salt === 'number') {
     console.error('salt round must not be used here because the result changes every time it is performed, even if the same value is passed')
     process.exit(1)
