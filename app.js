@@ -416,27 +416,35 @@ async function compressImage(buffer) {
   switch (format) {
     case 'jpeg':
     case 'webp':
-      // console.info(`image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+      if (process.env.DRY_RUN === 'true') {
+        console.info(`${format} image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+      }
 
       while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && quality >= 10) {
         let options = {}
         options.quality = quality
         compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
 
-        // console.info(`compressing image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+        if (process.env.DRY_RUN === 'true') {
+          console.info(`compressing ${format} image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+        }
 
         quality -= step
       }
       break
     case 'png':
-      // console.info(`image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+      if (process.env.DRY_RUN === 'true') {
+        console.info(`${format} image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+      }
 
       while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && compressionLevel <= 9) {
         let options = {}
         options.compressionLevel = compressionLevel
         compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
 
-        // console.info(`compressing image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+        if (process.env.DRY_RUN === 'true') {
+          console.info(`compressing ${format} image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+        }
 
         compressionLevel++
       }
