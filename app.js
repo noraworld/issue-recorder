@@ -386,19 +386,22 @@ async function compressImage(buffer) {
     buffer = await sharp(buffer).resize({
       width: Number(process.env.RESIZE_WIDTH),
       height: Number(process.env.RESIZE_HEIGHT),
-      fit: 'inside'
+      fit: 'inside',
+      withoutEnlargement: true
     }).toBuffer()
   }
   else if (process.env.RESIZE_WIDTH) {
     buffer = await sharp(buffer).resize({
       width: Number(process.env.RESIZE_WIDTH),
-      fit: 'inside'
+      fit: 'inside',
+      withoutEnlargement: true
     }).toBuffer()
   }
   else if (process.env.RESIZE_HEIGHT) {
     buffer = await sharp(buffer).resize({
       height: Number(process.env.RESIZE_HEIGHT),
-      fit: 'inside'
+      fit: 'inside',
+      withoutEnlargement: true
     }).toBuffer()
   }
 
