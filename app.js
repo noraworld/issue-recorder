@@ -882,7 +882,7 @@ function generateSecureHash(string, salt) {
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
 function generateFileHash(url) {
-  return crypto.createHash('sha256').update(url, 'utf8').digest('hex')
+  return crypto.createHash('sha256').update(url, 'utf8').digest('hex').slice(0, 32)
 }
 
 function randomInt(min, max) {
