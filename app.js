@@ -315,7 +315,10 @@ async function downloadAndUploadAttachedFile(url) {
     }
   }
 
+  // to measure how long it takes
+  if (process.env.DRY_RUN === 'true') console.info(`downloading file ${url}`)
   const response = await fetch(url, { headers: headers })
+  if (process.env.DRY_RUN === 'true') console.info(`file ${url} downloaded`)
 
   if (!response.ok) {
     throw new Error(`Failed to fetch attached file: ${response.statusText}`)
@@ -346,7 +349,9 @@ async function downloadAndUploadAttachedFile(url) {
   else {
     const dir = path.dirname(filepath)
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+    console.info(`writing file ${filepath}`)
     fs.writeFileSync(filepath, compressedBuffer)
+    console.info(`file ${filepath} written`)
 
     return `./${filepath}`
   }
@@ -413,13 +418,13 @@ async function compressImage(buffer) {
   let quality = 95
   let compressionLevel = 0
 
+  if (process.env.DRY_RUN === 'true') {
+    console.info(`${format} image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+  }
+
   switch (format) {
     case 'jpeg':
     case 'webp':
-      if (process.env.DRY_RUN === 'true') {
-        console.info(`${format} image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
-      }
-
       while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && quality >= 10) {
         let options = {}
         options.quality = quality
@@ -433,10 +438,6 @@ async function compressImage(buffer) {
       }
       break
     case 'png':
-      if (process.env.DRY_RUN === 'true') {
-        console.info(`${format} image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
-      }
-
       while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && compressionLevel <= 9) {
         let options = {}
         options.compressionLevel = compressionLevel
@@ -451,6 +452,10 @@ async function compressImage(buffer) {
       break
     default:
       break
+  }
+
+  if (process.env.DRY_RUN === 'true') {
+    console.info(`compressing ${format} image done (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
   }
 
   return compressedBuffer
