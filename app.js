@@ -297,6 +297,19 @@ async function downloadAndUploadAttachedFile(url) {
     process.exit(1)
   }
 
+  const [ owner, repo ] = process.env.ASSETS_REPO.split('/')
+
+  // do nothing if it's already the asset URL to avoid downloading and uploading exact the same file as a different filename
+  // the situation is when the content in an issue is saved to another one and the content in another issue is saved to a file
+  // if ('https://noraworld.github.io/github-actions-sandbox/2025/02/190c4a426d99f4b7082528073ede4c8d.png') {
+  if (url.startsWith(`https://${owner}.github.io/${repo}`)) {
+    if (process.env.DRY_RUN === 'true') {
+      console.info(`downloading and uploading file ${url} skipped because it might have been uploaded already`)
+    }
+
+    return url
+  }
+
   let headers = null
   const token = process.env.PERSONAL_ACCESS_TOKEN ?
                 process.env[process.env.PERSONAL_ACCESS_TOKEN] :
@@ -330,7 +343,6 @@ async function downloadAndUploadAttachedFile(url) {
   const extension = fileType ? fileType.ext : 'bin'
   const filename = `${generateFileHash(url)}.${extension}`
   const filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
-  const [ owner, repo ] = process.env.ASSETS_REPO.split('/')
   const assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
   const file = await getFileFromRepo(process.env.ASSETS_REPO, filepath)
 
