@@ -318,11 +318,12 @@ async function downloadAndUploadAttachedFile(url) {
   // to measure how long it takes
   if (process.env.DRY_RUN === 'true') console.info(`downloading file ${url}`)
   const response = await fetch(url, { headers: headers })
-  if (process.env.DRY_RUN === 'true') console.info(`file ${url} downloaded`)
 
   if (!response.ok) {
     throw new Error(`Failed to fetch attached file: ${response.statusText}`)
   }
+
+  if (process.env.DRY_RUN === 'true') console.info(`file ${url} downloaded`)
 
   const buffer = await response.arrayBuffer()
   const fileType = await detectFileType(buffer)
