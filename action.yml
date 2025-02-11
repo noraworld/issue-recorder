@@ -7,63 +7,63 @@ branding:
 
 inputs:
   mode:
-    description: Specify where to save the issues
+    description: mode
     required: false
     default: file
   filepath:
-    description: Specify the filename to be created or modified
+    description: filepath
     required: false
     default: default
   committer_name:
-    description: This value will be used for git commit
+    description: committer name
     required: false
     default: GitHub Actions
   committer_email:
-    description: This value will be used for git commit
+    description: committer email
     required: false
     default: actions@github.com
   overwrite_when_modified:
-    description: When the file already exists, the content will be replaced with a new one
+    description: overwrite when modified
     required: false
     default: ""
   extra_text_when_modified:
-    description: When the file already exists, this string will be added before the content
+    description: extra text when modified
     required: false
     default: "# From issues"
   notification_comment:
-    description: Specify the comment content to leave after saving to a file
+    description: notification comment
     required: false
     default: ""
   target_file_repo:
-    description: Select a repository with a username whose file you want to commit
+    description: target file repo
     required: false
     default: ""
   title_prefix_for_file:
-    description: Specify additional letters or emojis
+    description: title prefix for file
     required: false
     default: ""
   target_issue_repo:
-    description: Select a repository with a username whose issue you want to transfer
+    description: target issue repo
     required: false
     default: ""
   target_issue_number:
-    description: Select an issue number
+    description: target issue number
     required: false
     default: ""
   partial_content_target_issue_repo:
-    description: Select a repository with a username whose issue you want to transfer
+    description: partial content target issue repo
     required: false
     default: ""
   partial_content_target_issue_number:
-    description: Select an issue number
+    description: partial content target issue number
     required: false
     default: ""
   partial_content_start_string:
-    description: partial start string
+    description: partial content start string
     required: false
     default: ""
   partial_content_end_string:
-    description: partial end string
+    description: partial content end string
     required: false
     default: ""
   with_repo_assets:
@@ -95,63 +95,63 @@ inputs:
     required: false
     default: ""
   fold_threshold:
-    description: Specify the threshold to fold
+    description: fold threshold
     required: false
     default: infinity
   fold_summary:
-    description: Specify a summary string when an issue is folded
+    description: fold summary
     required: false
     default: ""
   title_prefix_for_issue:
-    description: Specify additional letters or emojis
+    description: title prefix for issue
     required: false
     default: ""
   with_date:
-    description: Whether to include the date and time
+    description: with date
     required: false
     default: ""
   timezone:
-    description: Your timezone
+    description: timezone
     required: false
     default: Etc/GMT
   time_format:
-    description: Time format
+    description: time format
     required: false
     default: MMM d, yyyy, h:mm a ZZZZ
   with_header:
-    description: Prepend a header content at the beginning of a file
+    description: with header
     required: false
     default: ""
   with_title:
-    description: Add an issue title
+    description: with title
     required: false
     default: ""
   custom_title:
-    description: Use a custom title given here instead of the original issue title
+    description: custom title
     required: false
     default: ""
   with_quote:
-    description: Whether to encompass the whole content with a quote
+    description: with quote
     required: false
     default: ""
   skip_body:
-    description: Whether to skip the body of an issue
+    description: skip body
     required: false
     default: ""
   skip_if_empty_including_body:
-    description: Whether to skip saving to a file or leaving a comment on another repository if the content that includes the body of an issue is empty
+    description: skip if empty including body
     required: false
     default: ""
   skip_if_empty_not_including_body:
-    description: Whether to skip saving to a file or leaving a comment on another repository if the content that does not include the body of an issue is empty
+    description: skip if empty not including body
     required: false
     default: ""
   fail_if_skip:
-    description: Notify by raising an error when saving to a file or leaving a comment on another repository is skipped
+    description: fail if skip
     required: false
     default: ""
   personal_access_token:
-    description: Specify your personal access token name stored in your repository
+    description: personal access token
     required: false
     default: ""
 
