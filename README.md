@@ -154,7 +154,7 @@ Let's say you set the options related to this function like that.
 And you leave a comment like the following.
 
 ```markdown
-I bumped into one of my best friends <private>(Kevin)</private> and we had a blast.
+I bumped into one of my best friends <private>Kevin</private> and we had a blast.
 ```
 
 When the action works, the content like the following will be saved to `octocat/repo-a` as a file and posted to the issue `octocat/repo-b/issues/1`.
