@@ -154,7 +154,7 @@ Let's say you set the options related to this function like that.
 And you leave a comment like the following.
 
 ```markdown
-I bumped into one of my best friends <private>(Tevin)</private> and we had a blast.
+I bumped into one of my best friends <private>(Kevin)</private> and we had a blast.
 ```
 
 When the action works, the content like the following will be saved to `octocat/repo-a` as a file and posted to the issue `octocat/repo-b/issues/1`.
@@ -168,9 +168,9 @@ As for the original content between `partial_content_start_string` and `partial_
 ```markdown
 | Reference | Content |
 | :---: | --- |
-| `[^pvt_1234567]` | Tevin |
+| `[^pvt_1234567]` | Kevin |
 
-[^pvt_1234567]: Tevin
+[^pvt_1234567]: Kevin
 ```
 
 **NOTE**: You can use the regular expression in `partial_content_start_string` and `partial_content_end_string`. In other words, if you want to use characters treated in the regular expression as those characters, you need to sanitize them. You don't have to escape `/`.
@@ -178,7 +178,7 @@ As for the original content between `partial_content_start_string` and `partial_
 #### Initial setup for `with_repo_assets`
 In order to use the asset repository, you need to enable [GitHub Pages](https://pages.github.com). This is important because this option is geared toward publishing the attached files that are posted on an issue as permanent links with cached enabled. If you don't enable it, not only the cache is unavailable but also the links are not accessible. You can enable it at `https://github.com/<USERNAME>/<REPO>/settings/pages`.
 
-You may need to create the file named [`.nojekyll`](https://github.blog/news-insights/bypassing-jekyll-on-github-pages/) on the root of the assets repository. GitHub Pages tries to build Jekyll by default. In most cases, it's unnecessary and not placing the Jekyll configuration files such as `_config.yml` will result in failing to build GitHub Pages.
+You may need to create the file named [`.nojekyll`](https://github.blog/news-insights/bypassing-jekyll-on-github-pages/) in the root of the assets repository. GitHub Pages tries to build Jekyll by default. In most cases, it's unnecessary and not placing the Jekyll configuration files such as `_config.yml` will result in failing to build GitHub Pages.
 
 #### Special identifier for `notification_comment`
 You can use the following special identifiers for `notification_comment`.
