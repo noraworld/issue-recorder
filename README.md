@@ -31,11 +31,38 @@ jobs:
           filepath: .issues/${{ github.event.issue.title }}.md
           committer_name: GitHub Actions
           committer_email: actions@github.com
+          overwrite_when_modified: true
           extra_text_when_modified: "# From issues"
+          notification_comment: "The content of this task was saved in [<FILE_PATH>](<FILE_URL>)"
+          target_file_repo: octocat/hello-world
+          title_prefix_for_file: 🥳
+          target_issue_repo: octocat/hello-world
+          target_issue_number: latest
+          partial_content_target_issue_repo: octocat/hello-world
+          partial_content_target_issue_number: latest
+          partial_content_start_string: "<private>"
+          partial_content_end_string: "</private>"
+          with_repo_assets: file
+          assets_repo: octocat/hello-world
+          assets_directory: ${{ github.event.issue.title }}
+          with_assets_compression: true
+          compression_threshold: 1048576
+          resize_width: 1920
+          resize_height: 1080
+          fold_threshold: 1000
+          fold_summary: Show details
+          title_prefix_for_issue: ✅
           with_date: true
           timezone: Etc/GMT
           time_format: h:mm a · MMM d, yyyy (ZZZZ)
           with_header: "---\r\ntitle: <TITLE>\r\nassignees: <ASSIGNEES>\r\nlabels: <LABELS>\r\n---"
+          with_title: true
+          custom_title: ${{ github.event.issue.title }}
+          with_quote: issue
+          skip_body: issue
+          skip_if_empty_including_body: "file, issue"
+          skip_if_empty_not_including_body: "file, issue"
+          fail_if_skip: true
           personal_access_token: GH_TOKEN
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
