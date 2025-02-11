@@ -68,6 +68,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 ```
 
+Overwhelmed by all these options? No worries! They're all optional, so you can skip them entirely if you want!
+
 ### Options
 Here are the options you can customize. All options are not necessarily required except for certain conditions, such as when `target_issue_number` sometimes has to be specified.
 
