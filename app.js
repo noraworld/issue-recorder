@@ -248,7 +248,9 @@ function buildPartialContent(partialDataJson) {
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
 async function replaceAttachedFiles(contentWithoutAttachedFiles) {
-  const regex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g
+  // a simple way to detect links like ![foo](https://example.com) and ignore `![foo](https://example.com)` at the same time
+  // but not perfect because it doesn't ignore the case like `hello ![foo](https://example.com) world`
+  const regex = /(?<!`)!\[.*?\]\((https?:\/\/[^\s)]+)\)(?!`)/g
   let matches
   const replacements = []
 
