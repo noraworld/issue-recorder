@@ -333,7 +333,7 @@ async function downloadAndUploadAttachedFile(url) {
   const response = await fetch(url, { headers: headers })
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch attached file: ${response.statusText}`)
+    throw new Error(`Failed to fetch attached file ${url}: ${response.statusText}`)
   }
 
   if (process.env.DRY_RUN === 'true') console.info(`file ${url} downloaded`)
