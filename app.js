@@ -251,16 +251,17 @@ function buildPartialContent(partialDataJson) {
 }
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
+// https://chatgpt.com/share/67dc00c4-4b0c-8004-9e30-4cd77023249a
 async function replaceAttachedFiles(contentWithoutAttachedFiles) {
   // a simple way to detect links like ![foo](https://example.com) and ignore `![foo](https://example.com)` at the same time
   // but not perfect because it doesn't ignore the case like `hello ![foo](https://example.com) world`
-  const regex = /(?<!`)!\[.*?\]\((https?:\/\/[^\s)]+)\)(?!`)/g
+  const regex = /(?<!`)(?:!\[.*?\]\((https?:\/\/[^\s)]+)\)|<img.*?src="(https?:\/\/[^\s"]+)".*?>)(?!`)/g
   let matches
   const replacements = []
 
   while ((matches = regex.exec(contentWithoutAttachedFiles)) !== null) {
     const original = matches[0]
-    const url = matches[1]
+    const url = matches[1] || matches[2]
 
     // to avoid downloading the same URL
     if (!cache.has(url)) {
