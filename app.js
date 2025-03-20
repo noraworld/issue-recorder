@@ -280,7 +280,8 @@ async function replaceAttachedFiles(contentWithoutAttachedFiles) {
   }
 
   for (const { original, url } of replacements) {
-    contentWithoutAttachedFiles = contentWithoutAttachedFiles.replace(url, cache.get(url))
+    // TODO: replaceAll() replaces the string encompassed with quotes (inline block), which is not intended to be replaced
+    contentWithoutAttachedFiles = contentWithoutAttachedFiles.replaceAll(url, cache.get(url))
   }
 
   return contentWithoutAttachedFiles
