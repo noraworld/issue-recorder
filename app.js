@@ -69,10 +69,12 @@ async function run() {
           }
         }
         else {
-          console.info('===== issueBody (mode = file) ======')
-          console.info(issueBody)
-          console.info('====== content (mode = file) =======')
-          console.info(content)
+          if (process.env.SKIP_INFO !== 'true') {
+            console.info('===== issueBody (mode = file) ======')
+            console.info(issueBody)
+            console.info('====== content (mode = file) =======')
+            console.info(content)
+          }
         }
 
         break
@@ -103,11 +105,13 @@ async function run() {
           }
         }
         else {
-          console.info('===== issueBody (mode = issue) =====')
-          console.info(issueBody)
-          console.info('====== content (mode = issue) ======')
-          console.info(content)
-          console.info('====================================')
+          if (process.env.SKIP_INFO !== 'true') {
+            console.info('===== issueBody (mode = issue) =====')
+            console.info(issueBody)
+            console.info('====== content (mode = issue) ======')
+            console.info(content)
+            console.info('====================================')
+          }
         }
 
         break
