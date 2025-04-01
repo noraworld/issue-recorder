@@ -682,6 +682,11 @@ async function push(repoWithUsername, content, commitMessage, filepath, sha) {
     process.exit(1)
   }
 
+  if (repoArchived(repoWithUsername)) {
+    console.error(`${repoWithUsername} is archived.`)
+    process.exit(1)
+  }
+
   const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
                   new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
                   new Octokit({ auth: process.env.GITHUB_TOKEN })
@@ -777,6 +782,22 @@ function getWhichModeToPostPartialContentIn(modes, skipBody) {
   }
   else {
     console.error('unexpected pattern has been detected.')
+    process.exit(1)
+  }
+}
+
+async function repoArchived(repoWithUsername) {
+  const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
+                  new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
+                  new Octokit({ auth: process.env.GITHUB_TOKEN })
+  const [ owner, repo ] = repoWithUsername.split('/')
+
+  try {
+    const { data } = await octokit.repos.get({ owner, repo })
+    return data.archived
+  }
+  catch (error) {
+    console.error(`failed to get repository info: ${error.message}`)
     process.exit(1)
   }
 }
