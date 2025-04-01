@@ -94,6 +94,10 @@ inputs:
     description: resize height
     required: false
     default: ""
+  with_compatible_format:
+    description: with compatible format
+    required: false
+    default: ""
   fold_threshold:
     description: fold threshold
     required: false
@@ -205,6 +209,7 @@ runs:
         COMPRESSION_THRESHOLD: ${{ inputs.compression_threshold }}
         RESIZE_WIDTH: ${{ inputs.resize_width }}
         RESIZE_HEIGHT: ${{ inputs.resize_height }}
+        WITH_COMPATIBLE_FORMAT: ${{ inputs.with_compatible_format }}
         FOLD_THRESHOLD: ${{ inputs.fold_threshold }}
         FOLD_SUMMARY: ${{ inputs.fold_summary }}
         TITLE_PREFIX_FOR_ISSUE: ${{ inputs.title_prefix_for_issue }}

@@ -347,19 +347,26 @@ async function downloadAndUploadAttachedFile(url) {
   if (process.env.DRY_RUN === 'true') console.info(`file ${url} downloaded`)
 
   const buffer = await response.arrayBuffer()
-  const fileType = await detectFileType(buffer)
-  const extension = fileType ? fileType.ext : 'bin'
-  const filename = `${generateFileHash(url)}.${extension}`
-  const filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
-  const assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
+  let fileType = await detectFileType(buffer)
+  let extension = fileType ? fileType.ext : 'bin'
+  let filename = `${generateFileHash(url)}.${extension}`
+  let filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
+  let assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
   const file = await getFileFromRepo(process.env.ASSETS_REPO, filepath)
 
   if (file) {
     return assetsURL
   }
 
-  // "compressedBuffer" will be the same as "buffer" if "WITH_ASSETS_COMPRESSION" is not specified
-  const compressedBuffer = await compressFile(Buffer.from(buffer), extension)
+  const compatibleFormatBuffer = await convertIntoCompatibleFormat(Buffer.from(buffer))
+  const compressedBuffer = await compressFile(compatibleFormatBuffer, extension)
+
+  // consider refactoring!
+  fileType = await detectFileType(compressedBuffer)
+  extension = fileType ? fileType.ext : 'bin'
+  filename = `${generateFileHash(url)}.${extension}`
+  filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
+  assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
 
   if (process.env.DRY_RUN !== 'true') {
     // sha is unnecessary (null is set) because the attached files are always published as a new file
@@ -376,6 +383,26 @@ async function downloadAndUploadAttachedFile(url) {
 
     return `./${filepath}`
   }
+}
+
+async function convertIntoCompatibleFormat(buffer) {
+  if (process.env.WITH_COMPATIBLE_FORMAT !== 'true') return buffer
+
+  const metadata = await sharp(buffer).metadata()
+  const originalFormat = metadata.format
+  let compatibleFormat = originalFormat
+
+  switch (originalFormat) {
+    case 'webp':
+      compatibleFormat = 'jpeg'
+      break
+    default:
+      break
+  }
+
+  if (originalFormat === compatibleFormat) return buffer
+
+  return await sharp(buffer).toFormat(compatibleFormat).toBuffer()
 }
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
