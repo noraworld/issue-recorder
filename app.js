@@ -709,7 +709,7 @@ async function push(repoWithUsername, content, commitMessage, filepath, sha) {
     process.exit(1)
   }
 
-  if (repoArchived(repoWithUsername)) {
+  if (await repoArchived(repoWithUsername)) {
     console.error(`${repoWithUsername} is archived.`)
     process.exit(1)
   }
