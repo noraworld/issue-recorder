@@ -15,7 +15,7 @@ const sharp        = require('sharp')
 // We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
 const newline = '\r\n'
 const tmpFile = 'tmp.md'
-const pushRetryMaximum = 10
+const pushRetryMaximum = 20
 const fixedSalt = bcrypt.genSaltSync(randomInt(10, 14))
 const cache = new Map()
 
@@ -746,6 +746,7 @@ async function push(repoWithUsername, content, commitMessage, filepath, sha) {
 
       if (i === pushRetryMaximum) {
         console.error(`The attempt #${i} has failed. No more attempts will be made. Sorry, please try again.`)
+        process.exit(1)
       }
       else {
         console.error(`The attempt #${i} has failed. Move on to the next attempt.`)
