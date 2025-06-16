@@ -138,6 +138,10 @@ inputs:
     description: with quote
     required: false
     default: ""
+  with_hr:
+    description: with hr
+    required: false
+    default: "file, issue"
   skip_body:
     description: skip body
     required: false
@@ -220,6 +224,7 @@ runs:
         WITH_TITLE: ${{ inputs.with_title }}
         CUSTOM_TITLE: ${{ inputs.custom_title }}
         WITH_QUOTE: ${{ inputs.with_quote }}
+        WITH_HR: ${{ inputs.with_hr }}
         SKIP_BODY: ${{ inputs.skip_body }}
         SKIP_IF_EMPTY_INCLUDING_BODY: ${{ inputs.skip_if_empty_including_body }}
         SKIP_IF_EMPTY_NOT_INCLUDING_BODY: ${{ inputs.skip_if_empty_not_including_body }}

@@ -31,6 +31,7 @@ async function run() {
 
   let comments
   let withQuote
+  let withHr
   let issueBody
   let contentWithoutAttachedFiles
   let content
@@ -45,13 +46,14 @@ async function run() {
       case 'file':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
+        withHr = (process.env.WITH_HR.includes('file')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? ['', []] : buildIssueBody(withQuote); // asi
         if (with_repo_assets.includes('file')) {
-          [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote);
+          [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr);
           content = await replaceAttachedFiles(contentWithoutAttachedFiles)
         }
         else {
-          [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+          [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr)
         }
         partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
         partialContent = buildPartialContent(partialDataJson)
@@ -81,13 +83,14 @@ async function run() {
       case 'issue':
         comments = await getComments()
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
+        withHr = (process.env.WITH_HR.includes('issue')) ? true : false; // asi
         [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? ['', []] : buildIssueBody(withQuote); // asi
         if (with_repo_assets.includes('issue')) {
-          [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote);
+          [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr);
           content = await replaceAttachedFiles(contentWithoutAttachedFiles)
         }
         else {
-          [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote)
+          [content, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr)
         }
         partialDataJson = extractedIssueBody.concat(extractedCommentBodies)
         partialContent = buildPartialContent(partialDataJson)
@@ -171,7 +174,9 @@ function buildIssueBody(withQuote) {
   return [issueBody, extractedIssueBody]
 }
 
-function buildContent(comments, issueBody, withQuote) {
+function buildContent(comments, issueBody, withQuote, withHr) {
+  const quote = withQuote ? '> ' : '';
+  const hr = withHr ? `---${newline}${newline}` : ''
   let content = ''
   let sanitizedCommentBody = ''
   let extractedCommentBody = []
@@ -183,7 +188,7 @@ function buildContent(comments, issueBody, withQuote) {
     extractedCommentBodies = extractedCommentBodies.concat(extractedCommentBody)
 
     if (!isFirstComment || issueBody) {
-      content += withQuote ? `${newline}> ---${newline}${newline}` : `${newline}---${newline}${newline}`
+      content += `${newline}${quote}${hr}`
     }
     isFirstComment = false
 
