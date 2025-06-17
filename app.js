@@ -32,6 +32,7 @@ async function run() {
   let comments
   let withQuote
   let withHr
+  let withTitle
   let issueBody
   let contentWithoutAttachedFiles
   let content
@@ -45,8 +46,11 @@ async function run() {
     switch (mode) {
       case 'file':
         comments = await getComments()
+
         withQuote = (process.env.WITH_QUOTE.includes('file')) ? true : false; // asi
         withHr = (process.env.WITH_HR.includes('file')) ? true : false; // asi
+        withTitle = (process.env.WITH_TITLE.includes('file')) ? true : false;
+
         [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? ['', []] : buildIssueBody(withQuote); // asi
         if (with_repo_assets.includes('file')) {
           [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr);
@@ -59,12 +63,12 @@ async function run() {
         partialContent = buildPartialContent(partialDataJson)
 
         if (getWhichModeToPostPartialContentIn(modes, skipBody) === 'file' && process.env.DRY_RUN !== 'true') {
-          postPartialContent(partialContent)
+          postPartialContent(partialContent, withTitle)
         }
 
         if (process.env.DRY_RUN !== 'true') {
           if (committable(issueBody, content)) {
-            await commit(issueBody, content)
+            await commit(issueBody, content, withTitle)
           }
           else {
             skipped = true
@@ -82,8 +86,11 @@ async function run() {
         break
       case 'issue':
         comments = await getComments()
+
         withQuote = (process.env.WITH_QUOTE.includes('issue')) ? true : false; // asi
         withHr = (process.env.WITH_HR.includes('issue')) ? true : false; // asi
+        withTitle = (process.env.WITH_TITLE.includes('issue')) ? true : false;
+
         [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? ['', []] : buildIssueBody(withQuote); // asi
         if (with_repo_assets.includes('issue')) {
           [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr);
@@ -96,12 +103,12 @@ async function run() {
         partialContent = buildPartialContent(partialDataJson)
 
         if (getWhichModeToPostPartialContentIn(modes, skipBody) === 'issue' && process.env.DRY_RUN !== 'true') {
-          postPartialContent(partialContent)
+          postPartialContent(partialContent, withTitle)
         }
 
         if (process.env.DRY_RUN !== 'true') {
           if (postable(issueBody, content)) {
-            post(issueBody, content)
+            post(issueBody, content, withTitle)
           }
           else {
             skipped = true
@@ -514,7 +521,7 @@ async function compressImage(buffer) {
   return compressedBuffer
 }
 
-async function commit(issueBody, content) {
+async function commit(issueBody, content, withTitle) {
   // Node.js Stream doesn't work if a filename contains back quotes, even if they are sanitized correctly.
   // Even if it were to work properly, back quotes shouldn't be used for a filename.
   const filepath = buildFilepath()
@@ -573,7 +580,7 @@ async function commit(issueBody, content) {
   }
 
   let title = ''
-  if (process.env.WITH_TITLE) {
+  if (withTitle) {
     const titlePrefixForFile = process.env.TITLE_PREFIX_FOR_FILE ? `${process.env.TITLE_PREFIX_FOR_FILE} ` : ''
     title = `# ${titlePrefixForFile}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
@@ -609,7 +616,7 @@ async function commit(issueBody, content) {
   }
 }
 
-function post(issueBody, content) {
+function post(issueBody, content, withTitle) {
   let targetIssueRepo = process.env.TARGET_ISSUE_REPO ? process.env.TARGET_ISSUE_REPO : process.env.GITHUB_REPOSITORY
 
   let targetIssueNumber = ''
@@ -621,7 +628,7 @@ function post(issueBody, content) {
   }
 
   let title = ''
-  if (process.env.WITH_TITLE) {
+  if (withTitle) {
     const titlePrefixForIssue = process.env.TITLE_PREFIX_FOR_ISSUE ? `${process.env.TITLE_PREFIX_FOR_ISSUE} ` : ''
     title = `## ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
@@ -644,7 +651,7 @@ function post(issueBody, content) {
 }
 
 // TODO: Consider refactoring because most of the codes is similar to post()
-function postPartialContent(partialContent) {
+function postPartialContent(partialContent, withTitle) {
   if (!partialContent) return false
 
   let targetIssueRepo = process.env.PARTIAL_CONTENT_TARGET_ISSUE_REPO
@@ -664,7 +671,7 @@ function postPartialContent(partialContent) {
   }
 
   let title = ''
-  if (process.env.WITH_TITLE) {
+  if (withTitle) {
     const titlePrefixForIssue = process.env.TITLE_PREFIX_FOR_ISSUE ? `${process.env.TITLE_PREFIX_FOR_ISSUE} ` : ''
     title = `## ${titlePrefixForIssue}[${buildFileTitle()}](${process.env.ISSUE_URL})${newline}`
   }
