@@ -169,9 +169,10 @@ async function getComments() {
 }
 
 function buildIssueBody(withQuote) {
+  if (!process.env.ISSUE_BODY) return ['', []]; // asi
+
   let issueBody = ''
   let extractedIssueBody = []
-  if (!process.env.ISSUE_BODY) return issueBody; // asi
 
   [issueBody, extractedIssueBody] = trimPartialContent(process.env.ISSUE_BODY)
   if (withQuote) issueBody = encompassWithQuote(issueBody)
