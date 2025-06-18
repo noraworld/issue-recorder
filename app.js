@@ -172,7 +172,7 @@ function buildIssueBody(withQuote) {
   if (!process.env.ISSUE_BODY) return ['', []]; // asi
 
   let issueBody = ''
-  let extractedIssueBody = []
+  let extractedIssueBody = [];
 
   [issueBody, extractedIssueBody] = trimPartialContent(process.env.ISSUE_BODY)
   if (withQuote) issueBody = encompassWithQuote(issueBody)
