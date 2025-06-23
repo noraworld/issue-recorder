@@ -371,7 +371,8 @@ async function downloadAndUploadAttachedFile(url) {
     return assetsURL
   }
 
-  const compatibleFormatBuffer = await convertIntoCompatibleFormat(Buffer.from(buffer))
+  const rotatedBuffer = await sharp(Buffer.from(buffer)).rotate().toBuffer()
+  const compatibleFormatBuffer = await convertIntoCompatibleFormat(rotatedBuffer)
   const compressedBuffer = await compressFile(compatibleFormatBuffer, extension)
 
   // consider refactoring!
