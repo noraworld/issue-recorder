@@ -362,29 +362,31 @@ async function downloadAndUploadAttachedFile(url) {
   const buffer = await response.arrayBuffer()
   let fileType = await detectFileType(buffer)
   let extension = fileType ? fileType.ext : 'bin'
-  let filename = `${generateFileHash(url)}.${extension}`
-  let filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
-  let assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
-  const file = await getFileFromRepo(process.env.ASSETS_REPO, filepath)
-
-  if (file) {
-    return assetsURL
-  }
 
   const rotatedBuffer = await sharp(Buffer.from(buffer)).rotate().toBuffer()
   const compatibleFormatBuffer = await convertIntoCompatibleFormat(rotatedBuffer)
   const compressedBuffer = await compressFile(compatibleFormatBuffer, extension)
 
-  // consider refactoring!
+  // Check if the same image exists in the assets repo by the hash value of the image binary.
+  const basename = generateImageHash(compressedBuffer);
+  const storedImages = await getStoredImagesFromRepo(owner, repo, 'main'); // TODO: 'main'
+  const targetImageIndex = storedImages.map(file => path.basename(file, path.extname(file))).indexOf(basename);
+  if (targetImageIndex >= 0) {
+    return `https://${owner}.github.io/${repo}/${storedImages[targetImageIndex]}`;
+  }
+
+  // The variables "fileType" and "extension" are assigned twice but it's needed
+  // because the extension might change when convertIntoCompatibleFormat() is invoked.
   fileType = await detectFileType(compressedBuffer)
   extension = fileType ? fileType.ext : 'bin'
-  filename = `${generateFileHash(url)}.${extension}`
-  filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
-  assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
+
+  const filename = `${basename}.${extension}`
+  const filepath = `${process.env.ASSETS_DIRECTORY}/${filename}`
+  const assetsURL = `https://${owner}.github.io/${repo}/${filepath}`
 
   if (process.env.DRY_RUN !== 'true') {
     // sha is unnecessary (null is set) because the attached files are always published as a new file
-    await push(process.env.ASSETS_REPO, compressedBuffer, `Add ${filepath}`, filepath, null)
+    await push(process.env.ASSETS_REPO, compressedBuffer, `Add ${filename}`, filepath, null)
 
     return assetsURL
   }
@@ -711,6 +713,46 @@ async function getFileFromRepo(repoWithUsername, path) {
   }
 }
 
+// https://chatgpt.com/share/685a42f8-bf74-8004-b4d7-3ec167cd82a6
+async function getStoredImagesFromRepo(owner, repo, branch) {
+  const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
+                  new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
+                  new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+  const refData = await octokit.rest.git.getRef({
+    owner,
+    repo,
+    ref: `heads/${branch}`,
+  });
+
+  const commitSha = refData.data.object.sha;
+
+  const commitData = await octokit.rest.git.getCommit({
+    owner,
+    repo,
+    commit_sha: commitSha,
+  });
+
+  const treeSha = commitData.data.tree.sha;
+
+  const treeData = await octokit.rest.git.getTree({
+    owner,
+    repo,
+    tree_sha: treeSha,
+    recursive: 'true',
+  });
+
+  if (treeData.data.truncated) {
+    throw new Error('⚠️ Tree is truncated (more than 100,000 files?)');
+  }
+
+  const files = treeData.data.tree
+    .filter(item => item.type === 'blob')
+    .map(item => item.path);
+
+  return files;
+}
+
 // https://blog.dennisokeeffe.com/blog/2020-06-22-using-octokit-to-create-files
 async function push(repoWithUsername, content, commitMessage, filepath, sha) {
   if (!process.env.COMMITTER_NAME) {
@@ -952,8 +994,8 @@ function generateSecureHash(string, salt) {
 }
 
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
-function generateFileHash(url) {
-  return crypto.createHash('sha256').update(url, 'utf8').digest('hex').slice(0, 32)
+function generateImageHash(buffer) {
+  return crypto.createHash('sha256').update(buffer).digest('hex').slice(0, 32)
 }
 
 function randomInt(min, max) {
