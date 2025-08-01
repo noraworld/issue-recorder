@@ -210,6 +210,10 @@ function buildContent(comments, issueBody, withQuote, withHr) {
     content += newline.repeat(process.env.EMPTY_LINES_COUNT_BETWEEN_COMMENTS)
   })
 
+  if (!content.endsWith(newline) && process.env.TRAILING_NEWLINE === 'true') {
+    content += newline
+  }
+
   return [content, extractedCommentBodies]
 }
 

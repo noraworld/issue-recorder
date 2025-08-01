@@ -154,6 +154,10 @@ inputs:
     description: newline count between comments
     required: false
     default: 1
+  trailing_newline:
+    description: trailing newline
+    required: false
+    default: true
   skip_body:
     description: skip body
     required: false
@@ -240,6 +244,7 @@ runs:
         WITH_QUOTE: ${{ inputs.with_quote }}
         WITH_HR: ${{ inputs.with_hr }}
         EMPTY_LINES_COUNT_BETWEEN_COMMENTS: ${{ inputs.empty_lines_count_between_comments }}
+        TRAILING_NEWLINE: ${{ inputs.trailing_newline }}
         SKIP_BODY: ${{ inputs.skip_body }}
         SKIP_IF_EMPTY_INCLUDING_BODY: ${{ inputs.skip_if_empty_including_body }}
         SKIP_IF_EMPTY_NOT_INCLUDING_BODY: ${{ inputs.skip_if_empty_not_including_body }}
