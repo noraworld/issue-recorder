@@ -207,7 +207,7 @@ function buildContent(comments, issueBody, withQuote, withHr) {
       content += `${newline}${newline}> ${formattedDateTime(comment.created_at)}`
     }
 
-    content += `${newline}`
+    content += newline.repeat(process.env.EMPTY_LINES_COUNT_BETWEEN_COMMENTS)
   })
 
   return [content, extractedCommentBodies]

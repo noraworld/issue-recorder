@@ -142,6 +142,10 @@ inputs:
     description: with hr
     required: false
     default: "file, issue"
+  empty_lines_count_between_comments:
+    description: newline count between comments
+    required: false
+    default: 1
   skip_body:
     description: skip body
     required: false
@@ -225,6 +229,7 @@ runs:
         CUSTOM_TITLE: ${{ inputs.custom_title }}
         WITH_QUOTE: ${{ inputs.with_quote }}
         WITH_HR: ${{ inputs.with_hr }}
+        EMPTY_LINES_COUNT_BETWEEN_COMMENTS: ${{ inputs.empty_lines_count_between_comments }}
         SKIP_BODY: ${{ inputs.skip_body }}
         SKIP_IF_EMPTY_INCLUDING_BODY: ${{ inputs.skip_if_empty_including_body }}
         SKIP_IF_EMPTY_NOT_INCLUDING_BODY: ${{ inputs.skip_if_empty_not_including_body }}
