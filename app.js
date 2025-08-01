@@ -11,9 +11,10 @@ const { Octokit }  = require('@octokit/rest')
 const path         = require('path')
 const sharp        = require('sharp')
 
-// When "\n" is used, GitHub will warn you of the following:
-// We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
-const newline = '\r\n'
+// TODO: Confirm if the warning below really shows when "\n" is used, and delete it if it's false. Maybe, it's false.
+//   When "\n" is used, GitHub will warn you of the following:
+//   We’ve detected the file has mixed line endings. When you commit changes we will normalize them to Windows-style (CRLF).
+const newline = '\n'
 const tmpFile = 'tmp.md'
 const pushRetryMaximum = 20
 const fixedSalt = bcrypt.genSaltSync(randomInt(10, 14))
