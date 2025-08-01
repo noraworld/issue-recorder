@@ -26,10 +26,18 @@ inputs:
     description: overwrite when modified
     required: false
     default: ""
+  newlines_count_before_extra_text:
+    description: newlines count before extra text
+    required: false
+    default: 1
   extra_text_when_modified:
     description: extra text when modified
     required: false
     default: "# From issues"
+  newlines_count_after_extra_text:
+    description: newlines count after extra text
+    required: false
+    default: 1
   notification_comment:
     description: notification comment
     required: false
@@ -200,7 +208,9 @@ runs:
         COMMITTER_NAME: ${{ inputs.committer_name }}
         COMMITTER_EMAIL: ${{ inputs.committer_email }}
         OVERWRITE_WHEN_MODIFIED: ${{ inputs.overwrite_when_modified }}
+        NEWLINES_COUNT_BEFORE_EXTRA_TEXT: ${{ inputs.newlines_count_before_extra_text }}
         EXTRA_TEXT_WHEN_MODIFIED: ${{ inputs.extra_text_when_modified }}
+        NEWLINES_COUNT_AFTER_EXTRA_TEXT: ${{ inputs.newlines_count_after_extra_text }}
         NOTIFICATION_COMMENT: ${{ inputs.notification_comment }}
         TARGET_FILE_REPO: ${{ inputs.TARGET_FILE_REPO }}
         TITLE_PREFIX_FOR_FILE: ${{ inputs.title_prefix_for_file }}

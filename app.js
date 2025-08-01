@@ -539,7 +539,7 @@ async function commit(issueBody, content, withTitle) {
   if (file) {
     if (!process.env.OVERWRITE_WHEN_MODIFIED) {
       // FIXME: Use the content of variable "file" instead of readFileSync()
-      existingContent = `${fs.readFileSync(filepath)}${newline}${process.env.EXTRA_TEXT_WHEN_MODIFIED}${newline}`
+      existingContent = `${fs.readFileSync(filepath)}${newline.repeat(process.env.NEWLINES_COUNT_BEFORE_EXTRA_TEXT)}${process.env.EXTRA_TEXT_WHEN_MODIFIED}${newline.repeat(process.env.NEWLINES_COUNT_AFTER_EXTRA_TEXT)}`
     }
 
     sha = file.data.sha
