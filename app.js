@@ -273,7 +273,7 @@ function buildPartialContent(partialDataJson) {
 async function replaceAttachedFiles(contentWithoutAttachedFiles) {
   // a simple way to detect links like ![foo](https://example.com) and ignore `![foo](https://example.com)` at the same time
   // but not perfect because it doesn't ignore the case like `hello ![foo](https://example.com) world`
-  const regex = /(?<!`)(?:!\[.*?\]\((https?:\/\/[^\s)]+)\)|<img.*?src="(https?:\/\/[^\s"]+)"(?!.*exclude).*>)(?!`)/g
+  const regex = /(?<!`)(?:!\[[^\]]*?\]\((https?:\/\/[^()\s]+)\)|<img(?![^>]*\bexclude\b)[^>]*\bsrc="(https?:\/\/[^"\s]+)"[^>]*>)(?!`)/g
   let matches
   const replacements = []
 
