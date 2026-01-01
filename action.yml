@@ -82,6 +82,14 @@ inputs:
     description: assets repo
     required: false
     default: ""
+  assets_repo_gist_id:
+    description: assets repo gist id
+    required: false
+    default: ""
+  assets_repo_gist_file:
+    description: assets repo gist file
+    required: false
+    default: "gistfile1.txt"
   assets_directory:
     description: assets directory
     required: false
@@ -226,6 +234,8 @@ runs:
         PARTIAL_CONTENT_END_STRING: ${{ inputs.partial_content_end_string }}
         WITH_REPO_ASSETS: ${{ inputs.with_repo_assets }}
         ASSETS_REPO: ${{ inputs.assets_repo }}
+        ASSETS_REPO_GIST_ID: ${{ inputs.assets_repo_gist_id }}
+        ASSETS_REPO_GIST_FILE: ${{ inputs.assets_repo_gist_file }}
         ASSETS_DIRECTORY: ${{ inputs.assets_directory }}
         WITH_ASSETS_COMPRESSION: ${{ inputs.with_assets_compression }}
         COMPRESSION_THRESHOLD: ${{ inputs.compression_threshold }}

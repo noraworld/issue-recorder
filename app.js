@@ -311,19 +311,33 @@ async function detectFileType(buffer) {
   return fileTypeFromBuffer(buffer)
 }
 
+async function getAssetsRepo() {
+  if (!process.env.ASSETS_DIRECTORY) {
+    console.error('The assets directory was not set.');
+    process.exit(1);
+  }
+
+  const octokit = process.env.PERSONAL_ACCESS_TOKEN ?
+                  new Octokit({ auth: process.env[process.env.PERSONAL_ACCESS_TOKEN] }) :
+                  new Octokit({ auth: process.env.GITHUB_TOKEN });
+
+  if (process.env.ASSETS_REPO) {
+    return process.env.ASSETS_REPO;
+  }
+  else if (process.env.ASSETS_REPO_GIST_ID) {
+    const gist = await octokit.rest.gists.get({ gist_id: process.env.ASSETS_REPO_GIST_ID });
+    return gist.data.files[process.env.ASSETS_REPO_GIST_FILE].content;
+  }
+  else {
+    console.error('The assets repository was not set.');
+    process.exit(1);
+  }
+}
+
 // https://chatgpt.com/share/67a6fe0a-c510-8004-9ed8-7b106493bb4a
 async function downloadAndUploadAttachedFile(url) {
-  if (!process.env.ASSETS_REPO) {
-    console.error('The assets repository was not set.')
-    process.exit(1)
-  }
-
-  if (!process.env.ASSETS_DIRECTORY) {
-    console.error('The assets directory was not set.')
-    process.exit(1)
-  }
-
-  const [ owner, repo ] = process.env.ASSETS_REPO.split('/')
+  const assetsRepo = await getAssetsRepo();
+  const [ owner, repo ] = assetsRepo.split('/');
 
   // do nothing if it's already the asset URL to avoid downloading and uploading exact the same file as a different filename
   // the situation is when the content in an issue is saved to another one and the content in another issue is saved to a file
@@ -391,7 +405,7 @@ async function downloadAndUploadAttachedFile(url) {
 
   if (process.env.DRY_RUN !== 'true') {
     // sha is unnecessary (null is set) because the attached files are always published as a new file
-    await push(process.env.ASSETS_REPO, compressedBuffer, `Add ${filename}`, filepath, null)
+    await push(assetsRepo, compressedBuffer, `Add ${filename}`, filepath, null)
 
     return assetsURL
   }
