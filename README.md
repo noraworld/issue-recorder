@@ -46,6 +46,8 @@ jobs:
           partial_content_end_string: "</private>"
           with_repo_assets: file
           assets_repo: octocat/hello-world
+          assets_repo_gist_id: 1234567890abcdef1234567890abcdef
+          assets_repo_gist_file: gistfile1.txt
           assets_directory: ${{ github.event.issue.title }}
           with_assets_compression: true
           compression_threshold: 1048576
@@ -100,6 +102,8 @@ Here are the options you can customize. All options are not necessarily required
 | `partial_content_end_string`                   | A counterpart of `partial_content_start_string` ([details](#about-partial-content))                                                                                                                                                                                                                                    | `v0.4.0` | `file`, `issue` | String  | `""`                                                          | `"({/private}</span>\|{/private}</div>)"`                                     |
 | `with_repo_assets`                             | Specify whether the attached files that are posted on an issue are saved to a repository with cache enabled ([details](#initial-setup-for-with_repo_assets))                                                                                                                                                           | `v0.4.0` | `file`, `issue` | String  | `""`                                                          | `file`, `issue`, `"file, issue"`                                              |
 | `assets_repo`                                  | A repository where the attached files are saved ([details](#initial-setup-for-with_repo_assets))                                                                                                                                                                                                                       | `v0.4.0` | `file`, `issue` | String  | `""`                                                          | `octocat/hello-world`                                                         |
+| `assets_repo_gist_id`                          | A Gist ID where `assets_repo` is written [^assets_repo_gist] ([details](#assets_repo_gist_id-&-assets_repo_gist_file))                                                                                                                                                                                                 | `main`   | `file`, `issue` | String  | `""`                                                          | `1234567890abcdef1234567890abcdef`                                            |
+| `assets_repo_gist_file`                        | A Gist file name where `assets_repo` is written [^assets_repo_gist] ([details](#assets_repo_gist_id-&-assets_repo_gist_file))                                                                                                                                                                                          | `main`   | `file`, `issue` | String  | `gistfile1.txt`                                               | `gistfile1.txt`                                                               |
 | `assets_directory`                             | A directory structure of the attached files                                                                                                                                                                                                                                                                            | `v0.4.0` | `file`, `issue` | String  | `""`                                                          | `${{ env.YEAR }}/${{ env.MONTH }}`                                            |
 | `with_assets_compression`                      | Whether the attached files are compressed or not                                                                                                                                                                                                                                                                       | `v0.4.0` | `file`, `issue` | Boolean | `""`                                                          | `true`                                                                        |
 | `compression_threshold`                        | When the file size of each attached file is larger than the specified number here, it is compressed until the size is smaller than the number                                                                                                                                                                          | `v0.4.0` | `file`, `issue` | Integer | `""`                                                          | `1048576`                                                                     |
@@ -141,6 +145,8 @@ It doesn't take any effect if you specify an option that is not relevant to the 
 [^with_hr]: `with_hr` is enabled by default for both the file mode and the issue mode. To disable it, you need to specify an empty string `""` explicitly.
 
 [^skip_if_empty_restriction]: You can't use `skip_if_empty_including_body` and `skip_if_empty_not_including_body` simultaneously.
+
+[^assets_repo_gist]: This option will be ignore if `assets_repo` is specified.
 
 #### Time format sample
 Here are some examples of the time formats. You can customize the time format other than the examples below.
@@ -193,6 +199,9 @@ As for the original content between `partial_content_start_string` and `partial_
 In order to use the asset repository, you need to enable [GitHub Pages](https://pages.github.com). This is important because this option is geared toward publishing the attached files that are posted on an issue as permanent links with cached enabled. If you don't enable it, not only the cache is unavailable but also the links are not accessible. You can enable it at `https://github.com/<USERNAME>/<REPO>/settings/pages`.
 
 You may need to create the file named [`.nojekyll`](https://github.blog/news-insights/bypassing-jekyll-on-github-pages/) in the root of the assets repository. GitHub Pages tries to build Jekyll by default. In most cases, it's unnecessary and not placing the Jekyll configuration files such as `_config.yml` will result in failing to build GitHub Pages.
+
+#### `assets_repo_gist_id` & `assets_repo_gist_file`
+Instead of specifying a repository where the attached files are saved as `assets_repo`, you can also specify a Gist ID (and a Gist file name as optional) where the assets repository name is written by using the options `assets_repo_gist_id` and `assets_repo_gist_file`. They are useful when you are using this action among a lot of repositories but want to specify the same repository. If you omit `assets_repo_gist_file`, then it will regard the file name as `gistfile1`, which is the default one in Gist.
 
 #### Special identifier for `notification_comment`
 You can use the following special identifiers for `notification_comment`.
