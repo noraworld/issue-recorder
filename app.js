@@ -54,6 +54,7 @@ async function run() {
 
         [issueBody, extractedIssueBody] = (skipBody.includes('file')) ? ['', []] : buildIssueBody(withQuote); // asi
         if (with_repo_assets.includes('file')) {
+          issueBody = await replaceAttachedFiles(issueBody);
           [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr);
           content = await replaceAttachedFiles(contentWithoutAttachedFiles)
         }
@@ -94,6 +95,7 @@ async function run() {
 
         [issueBody, extractedIssueBody] = (skipBody.includes('issue')) ? ['', []] : buildIssueBody(withQuote); // asi
         if (with_repo_assets.includes('issue')) {
+          issueBody = await replaceAttachedFiles(issueBody);
           [contentWithoutAttachedFiles, extractedCommentBodies] = buildContent(comments, issueBody, withQuote, withHr);
           content = await replaceAttachedFiles(contentWithoutAttachedFiles)
         }
