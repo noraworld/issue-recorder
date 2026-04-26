@@ -472,6 +472,13 @@ async function compressImage(buffer) {
     process.exit(1)
   }
 
+  const compressionThreshold = Number(process.env.COMPRESSION_THRESHOLD)
+
+  if (Number.isNaN(compressionThreshold) || compressionThreshold < 0) {
+    console.error('COMPRESSION_THRESHOLD must be a non-negative integer.')
+    process.exit(1)
+  }
+
   if (process.env.RESIZE_WIDTH && process.env.RESIZE_HEIGHT) {
     buffer = await sharp(buffer).resize({
       width: Number(process.env.RESIZE_WIDTH),
@@ -500,39 +507,81 @@ async function compressImage(buffer) {
   const step = 5
 
   let compressedBuffer = buffer
+  let smallestBuffer = buffer
   let quality = 95
   let compressionLevel = 0
+  let selectedQuality = null
+  let selectedCompressionLevel = 0
+
+  function updateSmallestBuffer(candidateBuffer, candidateQuality, candidateCompressionLevel) {
+    if (candidateBuffer.length < smallestBuffer.length) {
+      smallestBuffer = candidateBuffer
+      selectedQuality = candidateQuality
+      selectedCompressionLevel = candidateCompressionLevel
+    }
+  }
 
   if (process.env.DRY_RUN === 'true') {
-    console.info(`${format} image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+    console.info(`${format} image information before compressing (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel})`)
   }
 
   switch (format) {
     case 'jpeg':
     case 'webp':
-      while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && quality >= 10) {
+      while (compressedBuffer.length > compressionThreshold && quality >= 10) {
         let options = {}
         options.quality = quality
         compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
+        updateSmallestBuffer(compressedBuffer, quality, compressionLevel)
 
         if (process.env.DRY_RUN === 'true') {
-          console.info(`compressing ${format} image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+          console.info(`compressing ${format} image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel})`)
         }
 
         quality -= step
       }
+
+      compressedBuffer = smallestBuffer
       break
     case 'png':
-      while (compressedBuffer.length > process.env.COMPRESSION_THRESHOLD && compressionLevel <= 9) {
-        let options = {}
-        options.compressionLevel = compressionLevel
-        compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
-
-        if (process.env.DRY_RUN === 'true') {
-          console.info(`compressing ${format} image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+      {
+        let options = {
+          compressionLevel: 9,
+          adaptiveFiltering: true
         }
 
-        compressionLevel++
+        compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
+        updateSmallestBuffer(compressedBuffer, null, options.compressionLevel)
+        compressionLevel = options.compressionLevel
+
+        if (process.env.DRY_RUN === 'true') {
+          console.info(`compressing ${format} image... (size: ${compressedBuffer.length} bytes, quality: lossless, compressionLevel: ${compressionLevel})`)
+        }
+
+        if (compressedBuffer.length > compressionThreshold) {
+          quality = 100
+
+          while (compressedBuffer.length > compressionThreshold && quality >= 10) {
+            options = {
+              compressionLevel: 9,
+              adaptiveFiltering: true,
+              palette: true,
+              quality,
+              effort: 10
+            }
+            compressedBuffer = await sharp(buffer).toFormat(format, options).toBuffer()
+            updateSmallestBuffer(compressedBuffer, quality, options.compressionLevel)
+            compressionLevel = options.compressionLevel
+
+            if (process.env.DRY_RUN === 'true') {
+              console.info(`compressing ${format} image... (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel})`)
+            }
+
+            quality -= step
+          }
+        }
+
+        compressedBuffer = smallestBuffer
       }
       break
     default:
@@ -540,7 +589,8 @@ async function compressImage(buffer) {
   }
 
   if (process.env.DRY_RUN === 'true') {
-    console.info(`compressing ${format} image done (size: ${compressedBuffer.length} bytes, quality: ${quality}, compressionLevel: ${compressionLevel}`)
+    const displayQuality = selectedQuality === null ? 'lossless' : selectedQuality
+    console.info(`compressing ${format} image done (size: ${compressedBuffer.length} bytes, quality: ${displayQuality}, compressionLevel: ${selectedCompressionLevel})`)
   }
 
   return compressedBuffer
